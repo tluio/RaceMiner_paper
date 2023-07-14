@@ -1,3 +1,131 @@
 % !TeX spellcheck = en_US
 \section{Introduction}
 \label{sec_introduction}
+
+To take advantage of multiple-core architecture of modern CPUs, an OS kernel is 
+often designed to be highly concurrent. However, concurrent execution can 
+inevitably introduce concurrency bugs. Data race is a common kind of 
+concurrency bugs that occurs when multiple threads access the same variable 
+concurrently and at least one of the accesses is a write. Some data races are 
+quite dangerous and can cause serious bugs such as null-pointer dereferences, 
+data inconsistency and infinite loops.
+
+To detect data races effectively, some approaches~\cite{Boyapati:OOPSLA02, 
+Anderson:PLDI08, Anderson:PLDI09, Zhou:MICRO19, Flanagan:PASTE01, 
+Flanagan:PLDI00, Sadowski:PLATEAU14, ClangThreadSafety, Blackshear:OOPSLA18} 
+rely on developers to 
+supply annotations that describe the locking discipline such as which lock 
+protects a specific data structure field, and detect data races by exploiting 
+data structure field accesses that violate these disciplines. For example, 
+Clang thread safety analysis~\cite{ClangThreadSafety} requires developers to 
+label a variable and the lock to protect it with a {\tt GUARDED\_BY} attribute. 
+And then detects data races by finding variable accesses that violate the given 
+attribute. However, such annotation-based approaches are not suitable for race 
+detection in OS kernels, because even an expert developer can not provide 
+accurate annotations, due to poor documentation and complicated logic of OS 
+codes.
+
+Some static approaches~\cite{Choi:PLDI02, Engler:SOSP03, Voung:FSE07, 
+Pratikakis:PLDI06, Naik:PLDI06} employ lockset-based analysis to detect data 
+races automatically. They first collect locks that are acquired when a given 
+variable is accessed, and then mine locking rules about whether a given 
+variable should be protected by a specific lock. At last, they detect data 
+races by checking whether variable accesses violate the mined locking rules. 
+However, they do not consider alias relations~\cite{Voung:FSE07, Engler:SOSP03} 
+or just use imprecise flow-insensitive alias analysis~\cite{Choi:PLDI02, 
+Pratikakis:PLDI06, Naik:PLDI06}, and thus can introduce both false positives 
+and false negatives.
+
+Dynamic analysis can acquire run-time information such as memory address, and 
+thus complex alias analysis can be avoided. Therefore, some 
+approaches~\cite{Lochmann:EuroSys19, Lu:SOSP07, Lu:FSE18, Joshi:ASE08, 
+Liu:NSDI07} detect data races dynamically to improve precision. They mine 
+implicit code rules in softwares by statistically analyzing execution traces, 
+and then use the mined rules to detect related bugs. For example, 
+LockDoc~\cite{Lochmann:EuroSys19} records accesses to data structure fields and 
+lock acquisitions of an instrumented Linux kernel, and then infers locking 
+rules from the recorded accesses. After that, LockDoc automatically locates 
+data structure fields access that violate the inferred locking rules to detect 
+concurrency bugs such as data races. However, dynamic analysis suffers from low 
+code coverage, and thus the locking rules inferred through execution traces can 
+be imprecise. Besides, dynamic analyses are hard to deploy, because they need 
+to run OS kernels with instruments. At last, it is difficult for dynamic 
+tools to estimate the harmfulness of a data race, because race conditions are 
+hard to trigger by running the checked software~\cite{Fonseca:DSN10, 
+Burckhardt:ASPLOS10, Liu:FSE14, Zhou:EASE15}.
+
+In this paper, we design a practical static analysis approach named RaceMiner, 
+to automatically detect data races and estimate the harmfulness of these data 
+races in OS kernels effectively. RaceMiner consists of three key techniques:
+
+(T1) RaceMiner uses an {\em alias-aware rule mining method} to automatically 
+deduce locking rules. We observe that an access to a data structure field is 
+often protected by the lock in the same data structure as the accessed field. 
+And this relationship between accessed field and the protecting lock can be 
+effectively inferred from a special data structure named alias 
+graph~\cite{Li:ASPLOS22, Kastrinis:CC18}. Specifically, fields in the same data 
+structure have the same ancestor in the alias graph, and thus whether an 
+accessed field and a specific lock are in the same data structure can be 
+inferred by finding a common ancestor in the alias graph. Moreover, with 
+benefits from precise field-sensitive alias relationships of alias graph, 
+RaceMiner can accurately extract the accessed field and its corresponding 
+protecting lock. After obtaining the accessed field and protecting lock pairs, 
+RaceMiner calculates the proportion of field accesses protected by a specific 
+lock in all field accesses. If the proportion is larger than a given threshold, 
+the accessed field is determined to be protected by the protecting lock.
+
+(T2) RaceMiner uses a {\em lock-usage analysis} to filter out false positives 
+caused by concurrency. After mining locking rules, RaceMinder detects data 
+races by checking whether a given data structure field access violates the 
+locking rules. To reduce false negatives, RaceMinder conservatively assumes 
+every two functions can be executed concurrently, and thus can introduce false 
+positives. However, we observe that each kernel module has an initialization 
+phase, after which many functions can be called concurrently by other modules. 
+When performing initialization, the kernel module serially initialized the lock 
+and prepare other data for subsequent operations. And thus functions with the 
+lock initialization and functions called by them tend not to be executed 
+concurrently. Based on this observation, RaceMiner extracts all functions 
+reachable from the function with a lock initialization operation such as {\tt 
+spin\_lock\_init()}, and suppose that this function can not be executed in 
+parallel.
+
+(T3) RaceMiner uses a {\em pattern-based estimation} to extract harmful races 
+that can trigger memory or logical bugs such as null-pointer dereferences and 
+data inconsistency. Some data races are benign, and developers do not put 
+effort into repairing them because they can not cause serious memory or logical 
+bugs. Therefore, it is important to estimate the harm a data race can bring. We 
+observe that harmful data races can be estimated by given patterns. For 
+example, if a raced data performs as an operand of a dereference instruction, a 
+null-pointer dereference can occur; if a raced data is accessed for more than 
+once and data inconsistency can occur. Based on this observation, RaceMiner 
+uses some patterns to extract harmful races that can cause memory or logical 
+bugs automatically.
+
+We have implemented RaceMiner with LLVM~\cite{clang} and Z3~\cite{z3}. 
+RaceMiner performs automated static analysis on the LLVM bytecode of the 
+checked OS kernel. Overall, we make three main contributions in this paper:
+
+\begin{itemize}
+	\item We analyze the challenges of data race detection in OS kernels, and 
+	propose three key techniques to address	these challenges: (T1) an {\em 
+	alias-aware rule mining method} to automatically deduce locking rules; (T2) 
+	a {\em lock-usage analysis} to filter out false positives caused by 
+	concurrency; (T3) a {\em pattern-based estimation} to extract harmful data 
+	races that can trigger memory or logical bugs such as null-pointer 
+	dereferences and data inconsistency.
+	\item Based on these three key techniques, we design a practical static 
+	analysis approach named RaceMiner, to effectively detect data races and 
+	estimate the harmfulness of these data races in OS kernels.
+	\item We have evaluated RaceMiner on Linux 6.2, and find xxx data races, 	
+	with a false positive rate of xxx. Among these data races, xxx are 
+	estimated to be harmful. We have reported these harmful bugs to Linux 
+	kernel developers, and xxx of them have been confirmed.
+\end{itemize}
+
+The rest of this paper is organized as follows. Section~\ref{sec_motivation} 
+introduces the motivation and challenges of data race detection in OS kernels. 
+Section~\ref{sec_technique} introduces our key techniques to address these 
+challenges. Section~\ref{sec_framework} introduces RaceMiner. 
+Section~\ref{sec_evaluation} shows our evaluation. Section~\ref{sec_discussion} 
+makes a discussion about RaceMiner. Section~\ref{sec_related} presents related 
+work, and Section~\ref{sec_conclusion} concludes this paper.

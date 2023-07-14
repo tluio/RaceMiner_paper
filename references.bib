@@ -1,31 +1,287 @@
-
-
-@book{lamport94,
-    author    = "Leslie Lamport",
-    title     = "{\LaTeX: A Document Preparation System}",
-    year      = "1994",
-    publisher = "Addison-Wesley",
-    edition = "2nd",
-    address   = "Reading, Massachusetts"
+@misc{ClangThreadSafety,
+	key = {{Clang} Thread Safety Analysis},
+	title = {A {C++} language extension which warns about potential race 
+	conditions in code},
+	note = 
+	{\url{https://clang.llvm.org/docs/ThreadSafetyAnalysis.html}},
+	year = {2021}
 }
 
-@inproceedings{nicepaper1,
-  author = "Firstname1 Lastname1 and Firstname2 Lastname2",
-  title = "A Very Nice Paper To Cite",
-  year = "2012",
-  booktitle = "Proceedings of the 33rd Annual ACM SIGPLAN Conference on Programming Language Design and Implementation"
+@misc{clang,
+	key = {Clang},
+	title = {Clang: an {LLVM-based} {C/C++} compiler},
+	note = {\url{http://clang.llvm.org/}},
+	year = {2021}
 }
 
-@inproceedings{nicepaper2,
-  author = "Firstname1 Lastname1 and Firstname2 Lastname2 and Firstname3 Lastname3",
-  title = "Another Very Nice Paper to Cite",
-  year = "2011",
-  booktitle = "Proceedings of the 22nd ACM Symposium on Operating Systems Principles"
+@misc{z3,
+	key = {Z3},
+	title = {Z3: a theorem prover},
+	note = {\url{https://github.com/Z3Prover/z3}},
+	year = {2021}
 }
 
-@inproceedings{nicepaper3,
-  author = "Firstname1 Lastname1 and Firstname2 Lastname2 and Firstname3 Lastname3 and Firstname4 Lastname4 and Firstname5 Lastname5",
-  title = "Yet Another Very Nice Paper To Cite, With Many Author Names All Spelled Out",
-  year = "2011",
-  booktitle = "Proceedings of the 38th Annual International Symposium on Computer Architecture"
+@inproceedings{Boyapati:OOPSLA02,
+	title={Ownership types for safe programming: Preventing data races and 
+	deadlocks},
+	author={Boyapati, Chandrasekhar and Lee, Robert and Rinard, Martin},
+	booktitle={Proceedings of the 17th ACM SIGPLAN conference on 
+	Object-oriented programming, systems, languages, and applications (OOPSLA)},
+	pages={211--230},
+	year={2002},
+	note={\url{https://doi.org/10.1145/582419.582440}}
+}
+
+@inproceedings{Anderson:PLDI08,
+	title={{SharC}: checking data sharing strategies for multithreaded {C}},
+	author={Anderson, Zachary and Gay, David and Ennals, Rob and Brewer, Eric},
+	booktitle={Proceedings of the 29th ACM SIGPLAN Conference on Programming 
+	Language Design and Implementation (PLDI)},
+	pages={149--158},
+	year={2008},
+	note={\url{https://doi.org/10.1145/1379022.1375600}}
+}
+
+@inproceedings{Anderson:PLDI09,
+	title={Lightweight annotations for controlling sharing in concurrent data 
+	structures},
+	author={Anderson, Zachary R and Gay, David and Naik, Mayur},
+	booktitle={Proceedings of the 30th ACM SIGPLAN Conference on Programming 
+	Language Design and Implementation (PLDI)},
+	pages={98--109},
+	year={2009},
+	note={\url{https://doi.org/10.1145/1542476.1542488}}
+}
+
+@inproceedings{Zhou:MICRO19,
+	title={{PUSh}: Data race detection based on hardware-supported prevention 
+	of unintended sharing},
+	author={Zhou, Diyu and Tamir, Yuval},
+	booktitle={Proceedings of the 52nd Annual IEEE/ACM International Symposium 
+	on Microarchitecture (MICRO)},
+	pages={886--898},
+	year={2019},
+	note={\url{https://doi.org/10.1145/3352460.3358317}}
+}
+
+@inproceedings{Flanagan:PASTE01,
+	title={Detecting race conditions in large programs},
+	author={Flanagan, Cormac and Freund, Stephen N},
+	booktitle={Proceedings of the 2001 ACM SIGPLAN-SIGSOFT workshop on Program 
+	Analysis for Software Tools and Engineering (PASTE)},
+	pages={90--96},
+	year={2001},
+	note={\url{https://doi.org/10.1145/379605.379687}}
+}
+
+@inproceedings{Flanagan:PLDI00,
+	title={Type-based race detection for Java},
+	author={Flanagan, Cormac and Freund, Stephen N},
+	booktitle={Proceedings of the ACM SIGPLAN 2000 conference on Programming 
+	Language Design and Implementation (PLDI)},
+	pages={219--232},
+	year={2000},
+	note={\url{https://doi.org/10.1145/349299.349328}}
+}
+
+@inproceedings{Sadowski:PLATEAU14,
+	title={How developers use data race detection tools},
+	author={Sadowski, Caitlin and Yi, Jaeheon},
+	booktitle={Proceedings of the 5th Workshop on Evaluation and Usability of 
+	Programming Languages and Tools (PLATEAU)},
+	pages={43--51},
+	year={2014},
+	note={\url{https://doi.org/10.1145/2688204.2688205}}
+}
+
+@inproceedings{Lochmann:EuroSys19,
+	title={{LockDoc}: Trace-based analysis of locking in the {Linux} kernel},
+	author={Lochmann, Alexander and Schirmeier, Horst and Borghorst, Hendrik 
+	and Spinczyk, Olaf},
+	booktitle={Proceedings of the 14th EuroSys Conference 2019},
+	pages={1--15},
+	year={2019},
+	note={\url{https://doi.org/10.1145/3302424.3303948}}
+}
+
+@inproceedings{Lu:SOSP07,
+	title={MUVI: Automatically inferring multi-variable access correlations and 
+	detecting related semantic and concurrency bugs},
+	author={Lu, Shan and Park, Soyeon and Hu, Chongfeng and Ma, Xiao and Jiang, 
+	Weihang and Li, Zhenmin and Popa, Raluca A and Zhou, Yuanyuan},
+	booktitle={Proceedings of 21st ACM SIGOPS Symposium on Operating Systems 
+	Principles (SOSP)},
+	pages={103--116},
+	year={2007},
+	note={\url{https://doi.org/10.1145/1294261.1294272}}
+}
+
+@inproceedings{Lu:FSE18,
+	title={Cloudraid: hunting concurrency bugs in the cloud via log-mining},
+	author={Lu, Jie and Li, Feng and Li, Lian and Feng, Xiaobing},
+	booktitle={Proceedings of the 2018 26th ACM joint meeting on European 
+	Software Engineering Conference and Symposium on the Foundations of 
+	Software Engineering (ESEC/FSE)},
+	pages={3--14},
+	year={2018},
+	note={\url{https://doi.org/10.1145/3236024.3236071}}
+}
+
+@inproceedings{Joshi:ASE08,
+	title={Predictive typestate checking of multithreaded java programs},
+	author={Joshi, Pallavi and Sen, Koushik},
+	booktitle={2008 23rd IEEE/ACM International Conference on Automated 
+	Software Engineering (ASE)},
+	pages={288--296},
+	year={2008},
+	organization={IEEE},
+	note={\url{https://doi.org/10.1109/ASE.2008.39}}
+}
+
+@inproceedings{Liu:NSDI07,
+	title={WiDS checker: combating bugs in distributed systems},
+	author={Liu, Xuezheng and Lin, Wei and Pan, Aimin and Zhang, Zheng},
+	booktitle={Proceedings of the 4th USENIX conference on Networked Systems 
+	Design and Implementation (NSDI)},
+	pages={19--19},
+	year={2007},
+	note={\url{https://dl.acm.org/doi/abs/10.5555/1973430.1973449}}
+}
+
+@inproceedings{Choi:PLDI02,
+	title={Efficient and precise datarace detection for multithreaded 
+	object-oriented programs},
+	author={Choi, Jong-Deok and Lee, Keunwoo and Loginov, Alexey and 
+	O'Callahan, Robert and Sarkar, Vivek and Sridharan, Manu},
+	booktitle={Proceedings of the ACM SIGPLAN 2002 Conference on Programming 
+	Language Design and Implementation (PLDI)},
+	pages={258--269},
+	year={2002},
+	note={\url{https://doi.org/10.1145/512529.512560}}
+}
+
+@inproceedings{Engler:SOSP03,
+	title={{RacerX}: effective, static detection of race conditions and 
+	deadlocks},
+	author={Engler, Dawson and Ashcraft, Ken},
+	booktitle={Proceedings of the nineteenth ACM Symposium on Operating Systems 
+	Principles (SOSP)},
+	pages={237--252},
+	year={2003},
+	note={\url{https://doi.org/10.1145/945445.945468}}
+}
+
+@inproceedings{Voung:FSE07,
+	title={{RELAY}: static race detection on millions of lines of code},
+	author={Voung, Jan Wen and Jhala, Ranjit and Lerner, Sorin},
+	booktitle={Proceedings of the the 6th joint meeting of the European 
+	Software Engineering Conference and the ACM SIGSOFT Symposium on The 
+	Foundations of Software Engineering (ESEC/FSE)},
+	pages={205--214},
+	year={2007},
+	note={\url{https://doi.org/10.1145/1287624.1287654}}
+}
+
+@article{Blackshear:OOPSLA18,
+	title={{RacerD}: compositional static race detection},
+	author={Blackshear, Sam and Gorogiannis, Nikos and O'Hearn, Peter W and 
+	Sergey, Ilya},
+	journal={Proceedings of the ACM on Programming Languages (OOPSLA)},
+	volume={2},
+	number={OOPSLA},
+	pages={1--28},
+	year={2018},
+	publisher={ACM New York, NY, USA},
+	note={\url{https://doi.org/10.1145/3276514}}
+}
+
+@inproceedings{Pratikakis:PLDI06,
+	title={{LOCKSMITH}: context-sensitive correlation analysis for race 
+	detection},
+	author={Pratikakis, Polyvios and Foster, Jeffrey S and Hicks, Michael},
+	booktitle={Proceedings of the 27th ACM SIGPLAN Conference on Programming 
+	Language Design and Implementation},
+	pages={320--331},
+	year={2006},
+	note={\url{https://doi.org/10.1145/1133981.1134019}}
+}
+
+@inproceedings{Naik:PLDI06,
+	title={Effective static race detection for {Java}},
+	author={Naik, Mayur and Aiken, Alex and Whaley, John},
+	booktitle={Proceedings of the 27th ACM SIGPLAN Conference on Programming 
+	Language Design and Implementation (PLDI)},
+	pages={308--319},
+	year={2006},
+	note={\url{https://doi.org/10.1145/1133981.1134018}}
+}
+
+@inproceedings{Fonseca:DSN10,
+	title={A study of the internal and external effects of concurrency bugs},
+	author={Fonseca, Pedro and Li, Cheng and Singhal, Vishal and Rodrigues, 
+	Rodrigo},
+	booktitle={Proceedings of the 2010 IEEE/IFIP International Conference on 
+	Dependable Systems 
+	and Networks (DSN)},
+	pages={221--230},
+	year={2010},
+	organization={IEEE},
+	note={\url{https://doi.org/10.1109/DSN.2010.5544315}}
+}
+
+@inproceedings{Burckhardt:ASPLOS10,
+	title={A randomized scheduler with probabilistic guarantees of finding 
+	bugs},
+	author={Burckhardt, Sebastian and Kothari, Pravesh and Musuvathi, Madanlal 
+	and Nagarakatte, Santosh},
+	booktitle={Proceedings of the 15th International Conference on 
+	Architectural Support for Programming Languages and Operating Systems 
+	(ASPLOS)},
+	pages={167--178},
+	year={2010},
+	note={\url{https://doi.org/10.1145/1736020.1736040}}
+}
+
+@inproceedings{Liu:FSE14,
+	title={Grail: Context-aware fixing of concurrency bugs},
+	author={Liu, Peng and Tripp, Omer and Zhang, Charles},
+	booktitle={Proceedings of the 22nd ACM SIGSOFT International Symposium on 
+	Foundations of Software Engineering (FSE)},
+	pages={318--329},
+	year={2014},
+	note={\url{https://doi.org/10.1145/2635868.2635881}}
+}
+
+@inproceedings{Zhou:EASE15,
+	title={Predicting concurrency bugs: how many, what kind and where are 
+	they?},
+	author={Zhou, Bo and Neamtiu, Iulian and Gupta, Rajiv},
+	booktitle={Proceedings of the 19th International Conference on Evaluation 
+	and Assessment in Software Engineering {EASE}},
+	pages={1--10},
+	year={2015},
+	note={\url{https://doi.org/10.1145/2745802.2745807}}
+}
+
+@inproceedings{Li:ASPLOS22,
+	title={Path-sensitive and alias-aware typestate analysis for detecting os 
+	bugs},
+	author={Li, Tuo and Bai, Jia-Ju and Sui, Yulei and Hu, Shi-Min},
+	booktitle={Proceedings of the 27th ACM International Conference on 
+	Architectural Support for Programming Languages and Operating Systems 
+	(ASPLOS)},
+	pages={859--872},
+	year={2022},
+	note={\url{https://doi.org/10.1145/3503222.3507770}}
+}
+
+@inproceedings{Kastrinis:CC18,
+	title={An efficient data structure for must-alias analysis},
+	author={Kastrinis, George and Balatsouras, George and Ferles, Kostas and 
+	Prokopaki-Kostopoulou, Nefeli and Smaragdakis, Yannis},
+	booktitle={Proceedings of the 27th International Conference on Compiler 
+	Construction (CC)},
+	pages={48--58},
+	year={2018},
+	note={\url{https://doi.org/10.1145/3178372.3179519}}
 }

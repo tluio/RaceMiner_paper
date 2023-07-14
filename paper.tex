@@ -5,6 +5,8 @@
 
 \usepackage[normalem]{ulem}
 
+\usepackage[numbers, sort]{natbib}
+
 \begin{document}
 
 \title{
@@ -19,7 +21,7 @@ Static Race Detection in OS Kernels by Mining Locking Rules}
 	
 To take advantage of multiple-core architecture of modern CPUs, an operating 
 system (OS) is often designed to be highly concurrent, and processes shared 
-data structure in parallel. To ensure safe access to shared data structures, 
+data structures in parallel. To ensure safe access to shared data structures, 
 fine-grained locking mechanisms are used to avoid data races among different 
 threads. However, it is hard to determine whether a lock should be used for a 
 specific data structure field (locking rules) even for an expert developer, due 
@@ -35,7 +37,7 @@ OS kernels by mining locking rules. RaceMiner first employs an alias-aware rule
 mining method to automatically deduce locking rules, and detects data races 
 caused by violation of these rules. And then performs a lock-usage analysis to 
 filter out false positives caused by concurrency. At last, RaceMiner extracts 
-harmful data races from all detected data races through pattern-based 
+harmful data races from all detected data races through a pattern-based 
 estimation. We have evaluated RaceMiner on Linux 6.2, and find xxx data races, 
 with a false positive rate of xxx. Among these data races, xxx are estimated to 
 be harmful. We have reported these harmful bugs to Linux kernel developers, and 
@@ -44,9 +46,18 @@ xxx of them have been confirmed.
 \end{abstract}
 
 \input{1.introduction}
+\input{2.motivation}
+\input{3.technique}
+\input{4.framework}
+\input{5.evaluation}
+\input{6.discussion}
+\input{7.related}
+\input{8.conclusion}
 
+\footnotesize
 \bibliographystyle{plain}
 \bibliography{references}
+
 
 \end{document}
 
