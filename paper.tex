@@ -6,10 +6,20 @@
 \usepackage[normalem]{ulem}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{xspace}
+\usepackage{xstring}
 
 \usepackage[numbers, sort]{natbib}
 
 \newcommand{\sys}{\mbox{RaceMiner}\xspace}
+
+\newcommand{\figcaption}{% 
+	\setlength{\abovecaptionskip}{4pt}%	\setlength{\belowcaptionskip}{1pt}% 
+	\caption}
+
+\newcommand{\PP}[1]{
+	\vspace{2px}
+	\noindent{\bf \IfEndWith{#1}{.}{#1}{#1.}}
+}
 
 \begin{document}
 
