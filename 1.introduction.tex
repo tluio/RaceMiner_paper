@@ -68,15 +68,15 @@ structure have the same ancestor in the alias graph, and thus whether an
 accessed field and a specific lock are in the same data structure can be 
 inferred by finding a common ancestor in the alias graph. Moreover, with 
 benefits from precise field-sensitive alias relationships of alias graph, 
-\sys can accurately extract the accessed field and its corresponding 
+\sys can effectively extract the accessed field and its corresponding 
 protecting lock. After obtaining the accessed field and protecting lock pairs, 
 \sys calculates the proportion of field accesses protected by a specific 
 lock in all field accesses. If the proportion is larger than a given threshold, 
 the accessed field is determined to be protected by the protecting lock.
 
 (T2) \sys uses a {\em lock-usage analysis} to filter out false positives 
-caused by concurrency. After mining locking rules, \sys detects data 
-races by checking whether a given data structure field access violates the 
+validating concurrency of code paths. After mining locking rules, \sys detects 
+data races by checking whether a given data structure field access violates the 
 locking rules. To reduce false negatives, \sys conservatively assumes 
 every two functions can be executed concurrently, and thus can introduce false 
 positives. However, we observe that each kernel module has an initialization 
