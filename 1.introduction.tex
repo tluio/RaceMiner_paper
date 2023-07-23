@@ -13,13 +13,12 @@ inconsistency and infinite loops.
 To detect data races effectively, some approaches~\cite{Boyapati:OOPSLA02, 
 Anderson:PLDI08, Anderson:PLDI09, Zhou:MICRO19, Flanagan:PASTE01, 
 Flanagan:PLDI00, Sadowski:PLATEAU14, ClangThreadSafety, Blackshear:OOPSLA18} 
-rely on developers to 
-supply annotations that describe the locking discipline such as which lock 
-protects a specific data structure field, and detect data races by exploiting 
-data structure field accesses that violate these disciplines. For example, 
-Clang thread safety analysis~\cite{ClangThreadSafety} requires developers to 
-label a variable and the lock to protect it with a {\tt GUARDED\_BY} attribute. 
-And then detects data races by finding variable accesses that violate the given 
+rely on developers to supply annotations that describe the locking discipline 
+such as which lock protects a specific variable, and detect data races by 
+exploiting variable accesses that violate these disciplines. For example, Clang 
+thread safety analysis~\cite{ClangThreadSafety} requires developers to label a 
+variable and the lock to protect it with a {\tt GUARDED\_BY} attribute. And 
+then detects data races by finding variable accesses that violate the given 
 attribute. However, such annotation-based approaches are not suitable for race 
 detection in OS kernels, because even an expert developer can not provide 
 accurate annotations, due to poor documentation and complicated logic of OS 
@@ -42,16 +41,16 @@ approaches~\cite{Lochmann:EuroSys19, Lu:SOSP07, Lu:FSE18, Joshi:ASE08,
 Liu:NSDI07} detect data races dynamically to improve precision. They mine 
 implicit code rules in softwares by statistically analyzing execution traces, 
 and then use the mined rules to detect related bugs. For example, 
-LockDoc~\cite{Lochmann:EuroSys19} records accesses to data structure fields and 
-lock acquisitions of an instrumented Linux kernel, and then infers locking 
-rules from the recorded accesses. After that, LockDoc automatically locates 
-data structure fields access that violate the inferred locking rules to detect 
-concurrency bugs such as data races. However, dynamic analysis suffers from low 
-code coverage, and thus the locking rules inferred through execution traces can 
-be imprecise. Besides, dynamic analyses are hard to deploy, because they need 
-to run OS kernels with instruments. At last, it is difficult for dynamic 
-tools to estimate the harmfulness of a data race, because race conditions are 
-hard to trigger by running the checked software~\cite{Fonseca:DSN10, 
+LockDoc~\cite{Lochmann:EuroSys19} records accesses to variables and lock 
+acquisitions of an instrumented Linux kernel, and then infers locking rules 
+from the recorded accesses. After that, LockDoc automatically locates variables 
+access that violate the inferred locking rules to detect concurrency bugs such 
+as data races. However, dynamic analysis suffers from low code coverage, and 
+thus the locking rules inferred through execution traces can be imprecise. 
+Besides, dynamic analyses are hard to deploy, because they need to run OS 
+kernels with instruments. At last, it is difficult for dynamic tools to 
+estimate the harmfulness of a data race, because race conditions are hard to 
+trigger by running the checked software~\cite{Fonseca:DSN10, 
 Burckhardt:ASPLOS10, Liu:FSE14, Zhou:EASE15}.
 
 In this paper, we design a practical static analysis approach named \sys, 
@@ -59,9 +58,9 @@ to automatically detect data races and estimate the harmfulness of these data
 races in OS kernels effectively. \sys consists of three key techniques:
 
 (T1) \sys uses an {\em alias-aware rule mining method} to automatically 
-deduce locking rules. We observe that an access to a data structure field is 
-often protected by the lock in the same data structure as the accessed field. 
-And this relationship between accessed field and the protecting lock can be 
+deduce locking rules. We observe that an access to a variable is often 
+protected by the lock in the same data structure as the accessed field. And 
+this relationship between accessed field and the protecting lock can be 
 effectively inferred from a special data structure named alias 
 graph~\cite{Li:ASPLOS22, Kastrinis:CC18}. Specifically, fields in the same data 
 structure have the same ancestor in the alias graph, and thus whether an 
@@ -76,7 +75,7 @@ the accessed field is determined to be protected by the protecting lock.
 
 (T2) \sys uses a {\em lock-usage analysis} to filter out false positives 
 validating concurrency of code paths. After mining locking rules, \sys detects 
-data races by checking whether a given data structure field access violates the 
+data races by checking whether a given variable access violates the 
 locking rules. To reduce false negatives, \sys conservatively assumes 
 every two functions can be executed concurrently, and thus can introduce false 
 positives. However, we observe that each kernel module has an initialization 

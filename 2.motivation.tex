@@ -16,21 +16,20 @@ data race in the Linux DRM driver. In the DRM driver, the functions {\tt
 exynos\_drm\_crtc\_atomic\_disable()} and {\tt exynos\_crtc\_handle\_event()} 
 can execute concurrently. We exploit \textcircled{\footnotesize{n}} to 
 represent the execution order of instructions and show one execution case in 
-the left of Figure~\ref{fig_bug_demo}. In Thread 1, the data structure fields 
-{\tt crtc->state->event} and {\tt crtc->state->active} is checked by an if 
-statement in the function {\tt exynos\_drm\_crtc\_atomic\_disable()}. After the 
-condition is calculated to be true, the function {\tt 
-exynos\_crtc\_handle\_event()} is executed in Thread 2. In this function, the 
-value of {\tt crtc->state->active} is assigned to {\tt event} 
-(\textcircled{\footnotesize{2}}) and then {\tt event} is checked in an if 
-statement (\textcircled{\footnotesize{3}}). If it is not NULL, the data 
-structure field {\tt crtc->state->event} is assigned with NULL 
+the left of Figure~\ref{fig_bug_demo}. In Thread 1, the variables {\tt 
+crtc->state->event} and {\tt crtc->state->active} is checked by an if statement 
+in the function {\tt exynos\_drm\_crtc\_atomic\_disable()}. After the condition 
+is calculated to be true, the function {\tt exynos\_crtc\_handle\_event()} is 
+executed in Thread 2. In this function, the value of {\tt crtc->state->active} 
+is assigned to {\tt event} (\textcircled{\footnotesize{2}}) and then {\tt 
+event} is checked in an if statement (\textcircled{\footnotesize{3}}). If it is 
+not NULL, the variable {\tt crtc->state->event} is assigned with NULL 
 (\textcircled{\footnotesize{4}}). Right after this assignment, the function 
 {\tt drm\_crtc\_send\_vblank\_event} is called  in Thread 1 
 (\textcircled{\footnotesize{6}}) with the argument {\tt crtc->state->active}, 
 after acquiring the lock {\tt crtc->dev->event\_lock} 
-(\textcircled{\footnotesize{5}}). In the called function, the data structure 
-field {\tt crtc->state->event} is dereferenced through {\tt e->pipe} 
+(\textcircled{\footnotesize{5}}). In the called function, the variable {\tt 
+crtc->state->event} is dereferenced through {\tt e->pipe} 
 (\textcircled{\footnotesize{6}}). In this execution case, the data structure 
 {\tt crtc->state->event} is first assigned with NULL and then dereferenced, and 
 thus a null-pointer dereference can occur.
@@ -49,7 +48,7 @@ main challenges:
 
 \PP{C1: Getting locking rules.} The relationship between variables and locks 
 are not well documented in OS kernels, making it hard to determine whether a 
-specific data structure field should be protected by a lock and which lock is 
+specific variable should be protected by a lock and which lock is 
 required (locking rules), even for an expert developer. And thus existing 
 annotation-based approaches~\cite{Boyapati:OOPSLA02, Anderson:PLDI08, 
 Anderson:PLDI09, Zhou:MICRO19, Flanagan:PASTE01, Flanagan:PLDI00, 

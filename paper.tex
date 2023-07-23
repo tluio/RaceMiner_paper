@@ -19,6 +19,13 @@
 	\setlength{\abovecaptionskip}{4pt}%	\setlength{\belowcaptionskip}{1pt}% 
 	\caption}
 
+\newcommand{\tablecaption}{% 
+	\setlength{\abovecaptionskip}{6pt}%
+	\setlength{\belowcaptionskip}{2pt}% 
+	\caption}
+
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
 \newcommand{\PP}[1]{
 	\vspace{2px}
 	\noindent{\bf \IfEndWith{#1}{.}{#1}{#1.}}
@@ -42,13 +49,13 @@ concurrent issues. And data race is one of the most harmful concurrent issues
 that can trigger memory or logical bugs. A data race is caused by wrongly 
 accessing shared data in different threads. To ensure correct access to shared 
 data, fine-grained locking mechanisms are introduced. However, it is hard to 
-determine whether a lock should be used for a specific data structure field 
-(locking rules) even for an expert developer, due to poor documentation and 
-complicated logic of OS code. As a result, OS kernel is prone to data races, 
-because necessary locks may be missed by mistake. Static analysis is a common 
-technique to help improve code quality, but it is quite challenging to detect 
-data races in OS kernels automatically, because of lack of knowledge of locking 
-rules and high complexity of concurrent execution.
+determine whether a lock should be used for a specific variable (locking rules) 
+even for an expert developer, due to poor documentation and complicated logic 
+of OS code. As a result, OS kernel is prone to data races, because necessary 
+locks may be missed by mistake. Static analysis is a common technique to help 
+improve code quality, but it is quite challenging to detect data races in OS 
+kernels automatically, because of lack of knowledge of locking rules and high 
+complexity of concurrent execution.
 
 In this paper, we design a practical static analysis approach named \sys, to 
 effectively detect harmful races that can trigger memory or logical bugs in OS 
