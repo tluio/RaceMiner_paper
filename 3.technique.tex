@@ -93,9 +93,9 @@ get the field of the accessed variable and the field of the protecting lock in
 the form of access path, if they exist in the same data structure. Given a node 
 of an accessed variable and a node of a lock variable, the analysis first gets 
 the common ancestor of the two nodes (Line 1). And then, if the common ancestor 
-does not exist, the analysis returns NULL (Lines 2-3). Otherwise, the analysis 
-gets the access path for the node of the accessed variable and the node of the 
-lock variable from the common ancestor (Lines 5-7).
+does not exist, the analysis returns a NULL pair (Lines 2-3). Otherwise, the 
+analysis gets the access path for the node of the accessed variable and the 
+node of the lock variable from the common ancestor (Lines 5-7).
 
 %\begin{table}[htbp]
 %	\tablecaption{Notation table of pseudocodes.}
@@ -144,7 +144,7 @@ as code paths these accesses exist in. In Stage 3, it deduce locking rules by
 calculate the proportion of field accesses protected by a specific lock in all 
 field accesses. 
 
-\PP{S1: Key-field Extraction.} The OS Kernel has a large code base with 
+\PP{S1: Key-field extraction.} The OS Kernel has a large code base with 
 numerous variables. However, only a small part of variables should be protected 
 by a specific lock, and thus collecting all variable accesses can introduce 
 much unnecessary overhead. Generally, only a few field accesses can miss 
@@ -176,8 +176,21 @@ node of the operand is removed from the lock set (Lines 5-6).
 \end{figure}
 
 Figure~\ref{fig_pseudocode_field_extract} shows the pseudocode to collect key 
-fields that may be protected by a specific lock when are accessed, based on 
-lock-set analysis and alias graph. The analysis start analyzing 
+fields that may be protected by a specific lock, based on lock-set analysis and 
+the alias graph. The analysis starts from each function without a caller 
+function (Lines 36-40) and performs a path-based analysis~\cite{Li:ASPLOS22} 
+(Lines 26-31). For each instruction in the code path, the analysis first update 
+the alias graph according to the instruction with the four operations (MOVE, 
+STORE, LOAD and GEP) (Line 1), and then performs a lock-set analysis (Line 2) 
+to get all locks acquired. After update the alias graph and the lock set, the 
+analysis gets the node of the operand from the new alias graph (Lines 3-4), and 
+then update the set of key fields, according to the type of instructions (Lines 
+5-24). Specifically, if the instruction is a write or a read, for each node of 
+lock variable in the lock set, the analysis uses the alias graph to extract the 
+protected data structure field (Lines 9-11). If the field (in the form of 
+access path) is not NULL, it is inserted into the set of key fields. As for a 
+function call instruction, the analysis first analyzes the called function with 
+the alias graph and lock set of the caller function (Lines 18-21), and then 
+merges the returned key fields to the caller function (Line 22).
 
-For each function without a caller function, the analysis 
-
+\PP{S2: Field-access collection.} 
