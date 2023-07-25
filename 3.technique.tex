@@ -60,19 +60,19 @@ instead of a dereference operator $\mathit{*}$.
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.9\linewidth]{figures/fig_alias_graph_demo.pdf}
+	\includegraphics[width=0.9\linewidth]{figures/fig_demo_alias_graph.pdf}
 	\figcaption{Example of alias graph.}
-	\label{fig_alias_graph_demo}
+	\label{fig_demo_alias_graph}
 \end{figure}
 
-\noindent{\textbf{\em Example.}} Figure~\ref{fig_alias_graph_demo} shows a 
+\noindent{\textbf{\em Example.}} Figure~\ref{fig_demo_alias_graph} shows a 
 piece of driver-like source code and its alias graph. In this example, after an 
 GEP (\&dev->lock) operation at Line 6, an edge labeled with {\tt lock} from 
 node $\mathit{n_1}$ to node $\mathit{n_4}$ is inserted. Similarly, an edge 
 labeled with {\tt flag} from node $\mathit{n_1}$ to node $\mathit{n_2}$ is 
 inserted after Line 7. At last, an edge labeled with a dereference operator 
 ($\mathit{*}$) is inserted after the STORE (*fp = f) operation at Line 8. The 
-final alias graph is shown in Figure~\ref{fig_alias_graph_demo}(b), and access 
+final alias graph is shown in Figure~\ref{fig_demo_alias_graph}(b), and access 
 paths are shown in the bottom left corner. Take node $\mathit{n_3}$ as an 
 example, it can represent two fields, one is {\tt Dev.flag*}, and the other is 
 {\tt int\_pointer*} (we exploit int\_pointer to represent a pointer points to 
@@ -97,7 +97,7 @@ does not exist, the analysis returns a NULL pair (Lines 2-3). Otherwise, the
 analysis gets the access path for the node of the accessed variable and the 
 node of the lock variable from the common ancestor (Lines 5-7).
 
-Take the alias graph in Figure~\ref{fig_alias_graph_demo} as an example, {\tt 
+Take the alias graph in Figure~\ref{fig_demo_alias_graph} as an example, {\tt 
 \&dev->flag} is represented by node $\mathit{n_2}$, and {\tt \&dev->lock} is 
 represented by node $\mathit{n_4}$. The two nodes have a common ancestor 
 $\mathit{n_1}$, and thus the accessed variable {\tt \&dev->flag} and the 
@@ -221,3 +221,52 @@ all access to {\em f} (no matter which lock is accessed), and gets the number
 ratio {\em locked\_access\_num}/{\em all\_access\_num} is larger than a given 
 threshold, and these is at least one write access to {\em f}, the data 
 structure field {\em f} is inferred to be protected by the lock {\em l}.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/fig_demo_rule_mining.pdf}
+	\figcaption{Example of locking-rule mining.}
+	\label{fig_demo_rule_mining}
+\end{figure}
+
+\noindent{\textbf{\em Example.}} We use an example in 
+Figure~\ref{fig_demo_rule_mining} to illustrate how to mine locking rules 
+with the three stages. The analysis first perform a path-based analysis to 
+extract key fields. Take the code path {\tt Line 12, Line 6, Line 7, Line 8, 
+Line 9} as an example. The analysis updates the alias graph by handling two GEP 
+operations ({\em \&dev->lock} and {\em fp = dev->flag}) and a STORE operation 
+({\em *fp = f}). The final alias graph is shown in 
+Figure~\ref{fig_demo_rule_mining}(b). At the same time of alias analysis, the 
+analysis records the acquired lock {\em Dev.lock} into the lock set after the 
+lock instruction at Line 6. When analyzing the read instruction at Line 7, the 
+analysis finds the node of the accessed field ($\mathit{n_2}$) and the node of 
+the lock stored in the lock set ($\mathit{n_4}$) has the same ancestor 
+($\mathit{n_1}$), and thus {\em Dev.flag} is a key field. Similarly, {\em 
+Dev.flag*} is also a key field, due to the write instruction at Line 8. 
+
+After extracting key fields, the method collects all accesses to key fields 
+with lock set analysis and the alias graph. Take the code path {\tt Line 15, 
+Line 6, Line 7, Line 8, Line 9, Line 16 and Line 17} as an example, through a 
+lock instruction at Line 6, the analysis records the acquired lock {\em 
+Dev.lock} into the lock set. When analyzing the read instruction at Line 7, the 
+analysis finds the node of the accessed field ($\mathit{n_2}$) and the node of 
+the lock stored in the lock set ($\mathit{n_4}$) has the same ancestor 
+($\mathit{n_1}$), and thus records a field access <{\em Dev.flag}, {\em 
+Dev.lock}>. Similar to the read instruction at Line 7, the method also records 
+a field access <{\em Dev.flag*}, {\em Dev.lock}> for the write instruction at 
+Line 8. Then through an unlock operation at Line 9, the analysis removes the 
+lock {\em Dev.lock} is removed from the lock set. As a result, the key fields 
+{\em Dev.flag} and {\em Dev.flag*} are accessed without acquiring any lock, and 
+thus the analysis records two field accesses <{\em Dev.flag}, {\em NULL}> and 
+<{\em Dev.flag*}, {\em NULL}>. The final field accesses are shown in 
+Figure~\ref{fig_demo_rule_mining}.
+
+After collecting all field accesses, the analysis finds that the fields {\em 
+Dev.flag} and {\em Dev.flag*} are accessed under three calling contexts, and 
+two of them are protected by the lock {\em Dev.lock}. And thus the two fields 
+{\em Dev.flag} and {\em Dev.flag*} is deduce to be protected by the lock {\em 
+Dev.lock} (assume the threshold of the ratio locked\_access\_num / 
+all\_access\_num is 0.6).
+
+\subsection{Lock-Usage Analysis}
+\label{subsec_lock_usage_analysis}

@@ -7,16 +7,16 @@
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=1\linewidth]{figures/fig_bug_demo.pdf}
+	\includegraphics[width=1\linewidth]{figures/fig_demo_bug.pdf}
 	\figcaption{A null-pointer dereference due to data race in Linux 6.2.}
-	\label{fig_bug_demo}
+	\label{fig_demo_bug}
 \end{figure}
-Figure~\ref{fig_bug_demo} shows a real null-pointer dereference caused by a 
+Figure~\ref{fig_demo_bug} shows a real null-pointer dereference caused by a 
 data race in the Linux DRM driver. In the DRM driver, the functions {\tt 
 exynos\_drm\_crtc\_atomic\_disable()} and {\tt exynos\_crtc\_handle\_event()} 
 can execute concurrently. We exploit \textcircled{\footnotesize{n}} to 
 represent the execution order of instructions and show one execution case in 
-the left of Figure~\ref{fig_bug_demo}. In Thread 1, the variables {\tt 
+the left of Figure~\ref{fig_demo_bug}. In Thread 1, the variables {\tt 
 crtc->state->event} and {\tt crtc->state->active} is checked by an if statement 
 in the function {\tt exynos\_drm\_crtc\_atomic\_disable()}. After the condition 
 is calculated to be true, the function {\tt exynos\_crtc\_handle\_event()} is 
