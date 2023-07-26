@@ -220,7 +220,9 @@ all access to {\em f} (no matter which lock is accessed), and gets the number
 {\em all\_access\_num} in the same way as {\em locked\_access\_num}. If the 
 ratio {\em locked\_access\_num}/{\em all\_access\_num} is larger than a given 
 threshold, and these is at least one write access to {\em f}, the data 
-structure field {\em f} is inferred to be protected by the lock {\em l}.
+structure field {\em f} is inferred to be protected by the lock {\em l}. After 
+deducting locking rules, the analysis detecting data races by checking whether 
+a field access validates any locking rules.
 
 \begin{figure}[htbp]
 	\centering
@@ -255,18 +257,72 @@ the lock stored in the lock set ($\mathit{n_4}$) has the same ancestor
 Dev.lock}>. Similar to the read instruction at Line 7, the method also records 
 a field access <{\em Dev.flag*}, {\em Dev.lock}> for the write instruction at 
 Line 8. Then through an unlock operation at Line 9, the analysis removes the 
-lock {\em Dev.lock} is removed from the lock set. As a result, the key fields 
-{\em Dev.flag} and {\em Dev.flag*} are accessed without acquiring any lock, and 
-thus the analysis records two field accesses <{\em Dev.flag}, {\em NULL}> and 
-<{\em Dev.flag*}, {\em NULL}>. The final field accesses are shown in 
-Figure~\ref{fig_demo_rule_mining}.
+lock {\em Dev.lock} from the lock set. As a result, the key fields {\em 
+Dev.flag} and {\em Dev.flag*} are accessed without acquiring any lock, and thus 
+the analysis records two field accesses <{\em Dev.flag}, {\em NULL}> and <{\em 
+Dev.flag*}, {\em NULL}>. The final field accesses are shown in 
+Figure~\ref{fig_demo_rule_mining}(c).
 
 After collecting all field accesses, the analysis finds that the fields {\em 
 Dev.flag} and {\em Dev.flag*} are accessed under three calling contexts, and 
 two of them are protected by the lock {\em Dev.lock}. And thus the two fields 
 {\em Dev.flag} and {\em Dev.flag*} is deduce to be protected by the lock {\em 
-Dev.lock} (assume the threshold of the ratio locked\_access\_num / 
-all\_access\_num is 0.6).
+Dev.lock} (assume the threshold of the ratio {\em locked\_access\_num} / 
+{\em all\_access\_num} is 0.6). However, the accesses at Lines 16 and 17 are 
+not protected by {\em Dev.lock} and thus causing two data races.
 
 \subsection{Lock-Usage Analysis}
 \label{subsec_lock_usage_analysis}
+Our analysis takes functions that has no caller function as the entry as 
+existing work~\cite{Li:ASPLOS22}, and performs a path-based analysis. It 
+assumes that all codes reaching from entry functions can execute concurrently 
+to reduce false negatives. However, this assumption is too conservative and can 
+introduce many false positives because not all entry functions can execute 
+concurrently in fact. We observe that each kernel module has an initialization 
+phase, after which many function can be called concurrently by other modules. 
+When performing initialization, the kernel module serially initialized the lock 
+and prepare other data for subsequent operations. And thus functions with the 
+lock initialization and functions called by them tend not to be executed 
+concurrently. Based on the observation, we propose a lock-usage analysis to 
+filter out false positives caused by code that can not execute concurrently.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/fig_pseudocode_lock_usage.pdf}
+	\figcaption{Pseudocodes of lock-usage analysis.}
+	\label{fig_pseudocode_lock_usage}
+\end{figure}
+
+Our lock-usage analysis uses the union-find set~\cite{Galler:ACM64} to get all 
+functions that reachable from the lock initialization function such as {\em 
+mutex\_init()} and {\em spin\_lock\_init()}. 
+Figure~\ref{fig_pseudocode_lock_usage} shows the pseudocodes of the lock-usage 
+analysis. For each analyzed function in the OS kernel, the analysis first gets 
+all the called function of it (Lines 3-4), and then union the analyzed function 
+and the called function to update the union-find set (Line 5). After processing 
+all the call instructions, the analysis judging whether a function executes in 
+the initialization phase by checking whether it exist in the same set with the 
+given lock initialization function (Lines 9-11).
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/fig_demo_lock_usage.pdf}
+	\figcaption{A false data race filtered out by our lock-usage analysis.}
+	\label{fig_demo_lock_usage}
+\end{figure}
+
+\noindent{\textbf{\em Example.}} Figure~\ref{fig_demo_lock_usage} shows a false 
+data race filtered out by our lock-usage analysis in the Linux DRM scheduler. 
+For example in {\em drm\_sched\_entity\_set\_priority()}, the accesses to {\em 
+entity->priority} is protected by the lock {\em entity->rq\_lock} in most 
+cases. Therefore, {\em entity-priority} is deduced to be protected by the lock 
+{\em entity->rq\_lock}. But in {\em drm\_sched\_entity\_init()}, {\em 
+entity->priority} is written without acquiring the lock {\em entity->rq\_lock} 
+and thus introducing a possible data race. However, the lock initialization 
+function {\em spin\_lock\_init()} is called at Line 86 by {\em 
+drm\_sched\_entity\_init()}. And thus {\em drm\_sched\_entity\_init()} is 
+inferred to execute in the module initialization phase and can not execute 
+concurrently with other function, and this is a false data race.
+
+\subsection{Pattern-Based Estimation}
+\label{subsec_estimation}
