@@ -5,7 +5,7 @@
 Based on the three key techniques in Section~\ref{sec_technique}, we develop a 
 practical static approach named \sys, to detect data races in OS kernels, and 
 estimate harmfulness of these data races. We have implemented \sys with 
-Clang~\cite{Clang} and Z3~\cite{Z3}. \sys automatically mines locking rules, 
+Clang~\cite{clang} and Z3~\cite{z3}. \sys automatically mines locking rules, 
 detects data races and estimates the harmfulness of detected data races. 
 Figure~\ref{fig_architecture} shows the architecture of \sys, which has four 
 phases:
@@ -29,16 +29,17 @@ mining method to deduce locking rules about whether a variable access should be
 protected by a lock and which lock is required.
 
 \PP{P3: Data race detection and false-positive filtering.} The data race 
-detector detecting data races by checking whether a given access violate the 
-rules mined by our locking-rule miner. If so, the data race filter drops 
-false-positives with our locking-usage analysis. Besides, for a given data 
-race, there may be multiple code paths from the entry function to its 
-problematic instruction, and thus many repeated data races can be reported.  
-To drop repeated data races, for a new possible data race, the data race filter 
-checks whether its problematic instruction is identical to any existing data 
-race. If so, this possible data race is regarded as repeated and dropped.
+detector detecting data races by checking whether a given access violates the 
+rules mined by our locking-rule miner. After finding a possible data race, the 
+data race filter uses our locking-usage analysis to determine whether it is a 
+false positive. Besides, for a given data race, there may be multiple code 
+paths from the entry function to its problematic instruction, and thus many 
+repeated data races can be reported. To drop repeated data races, for a new 
+possible data race, the data race filter checks whether its problematic 
+instruction is identical to any existing data race. If so, this possible data 
+race is regarded as repeated and dropped.
 
 \PP{P4: Harmfulness estimation.} The harmfulness estimator uses our 
 pattern-based estimation to estimate the harmfulness of detected data races, 
-and reports data races that can cause memory or logic bugs. With these result, 
+and reports data races that can cause memory or logic bugs. With these results, 
 developers can focus on those harmful data races.

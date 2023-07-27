@@ -1,3 +1,111 @@
 % !TeX spellcheck = en_US
 \section{Evaluation}
 \label{sec_evaluation}
+
+To validate the effectiveness of \sys, we evaluate it on the code of Linux 
+kernel 6.2. We run the evaluation on a regular x86-64 desktop with sixteen 
+Intel i7-10700 CPU@2.90GHz processors and 64GB physical memory. We use the 
+kernel configuration {\em allyesconfig} to enable all kernel code for the 
+x86-64 architecture.
+
+\begin{table}[tbph]
+	\tablecaption{Detection results of Linux 6.2.}
+	\label{tbl_bug_detection}
+	\renewcommand{\arraystretch}{1}
+	\setlength\tabcolsep{2pt}
+	\noindent{\scriptsize
+		\begin{center}
+			\begin{tabular}{p{1.5cm}|l|c}
+				\hline
+				\multicolumn{2}{c|}{\textbf{Description}} & \textbf{\sys}  
+				\\ \hline
+				\multirow{2}{1.5cm}{\textbf{{\em Code analysis}}} & 
+				Source files (analyzed/all) & xxxK/xxxK
+				\\ \cline{2-3}
+				& Source code lines (analyzed/all) & xxxM/xxxM 
+				\\ \cline{2-3}
+				\hline
+				\multirow{3}{1.5cm}{\textbf{{\em Locking-rule mining}}} & 
+				Key fields / total variables& 
+				\\ \cline{2-3}
+				& Mined locking rules &
+				\\ \cline{2-3}
+				& Protected field accesses / all accesses & 0.6
+				\\ \cline{2-3}
+				\hline
+				\multirow{2}{1.5cm}{\textbf{{\em Data race detection}}} & 
+				Detected data races (real / all) & 257 / 341
+				\\ \cline{2-3}
+				& Dropped data races by lock-usage analysis & 59
+				\\ \cline{2-3}
+				\hline
+				\multirow{5}{1.5cm}{\textbf{{\em Data race estimation}}}
+				& Null-pointer dereference (confirmed / all) & 15 / 20
+				\\ \cline{2-3}
+				& Infinite loop (confirmed / all) & 0 / 1
+				\\ \cline{2-3}
+				& Data inconsistency (confirmed / all) & 7 / 10
+				\\ \cline{2-3}
+				& Unprotected write (confirmed / all) & 10 / 57
+				\\ \cline{2-3}
+				& Total harmful data races (confirmed / all) & 32 / 88
+				\\ \cline{2-3}
+				\hline
+				\multirow{3}{1.5cm}{\textbf{{\em Time usage}}} & 
+				Key-field extraction & 
+				\\ \cline{2-3}
+				& Data-race detection &
+				\\ \cline{2-3}
+				& Total time &
+				\\ \cline{2-3}
+				\hline
+			\end{tabular}
+	\end{center}}
+\end{table}
+
+\subsection{Bug Detection}
+\label{subsec_bug_detection}
+
+We configure \sys with common lock-acquiring/release functions (like {\tt 
+spin\_lock and spin\_unlock}) to perform lock-set analysis to extract key 
+fields and mine locking rules, and lock-initialization functions (like {\tt 
+spin\_lock\_init}) to filter our false data races caused by code paths that 
+can not execute concurrently. And then run \sys to automatically check the 
+kernel source code. We manually check all the data races found by \sys, and 
+Table~\ref{tbl_bug_detection} shows the results, and source code lines are 
+counted by CLOC~\cite{cloc}. From the results, we have the following findings:
+
+\PP{Code analysis.} \sys can scale to large code bases of OS kernels, and it in 
+total analyze xxxM lines of code in xxxK source code files within xxx hours. 
+The remaining xxxM lines of code in xxxK source files are not analyzed, as they 
+are not enabled by the {\em allyesconfig} for the x86-64 architecture. We 
+believe that \sys can also find more data races in other architectures with 
+proper configuration.
+
+\PP{Locking-rule mining.} An OS kernel has a large code base with numerous 
+variables. Handling all variables when mining locking rules can introduce much 
+overhead. However, we observe that a variable tend to be protected by the lock 
+stored in the same data structure as the accessed variable. Based on this 
+observation, our locking-rule mining method first extract a key field by 
+finding whether there exists any access to it that is protected by a lock 
+stored in the same data structure. This method drops xxx\% variables (xxx out 
+xxx) that need to handled when mining locking rules, and thus can reduce 
+overhead significantly. After extracting key fields, our locking-rule mining 
+method collect all accessed to these key fields, and then deducing locking-rule 
+based on statistic. In this paper, given a data structure field, we set the 
+threshold of the ratio of accesses protected by a specific lock to all accesses 
+to 0.6. Our alias-aware rule mining method can drop many false rules and thus 
+only mines xxx rules, which can effectively reduce false data races.
+
+\PP{Data race detection.}
+
+\PP{Data race estimation.} Many data races are benign and can not cause memory 
+or logic bugs, and thus developers are unwilling to put effort into repairing 
+them. We exploit four patterns to detect null-pointer dereferences, infinite 
+loop, data inconsistency and unprotected write as introduced in 
+Section~\ref{subsec_estimation}, and find 88 data races in these patterns. We 
+report them to developers and 32 of them have been confirmed and fixed by them. 
+We still wait for response of other data races. Moreover, one of the bluetooth 
+l2cap protocol wonder if \sys can be used in their CI to detect these problems. 
+The results show that our pattern-based estimation can extract harmful data 
+races effectively, and can considerably reduce the workload of developers.
