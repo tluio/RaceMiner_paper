@@ -1,0 +1,140 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{Boyapati:OOPSLA02,Anderson:PLDI08,Anderson:PLDI09,Zhou:MICRO19,Flanagan:PASTE01,Flanagan:PLDI00,Sadowski:PLATEAU14,ClangThreadSafety,Blackshear:OOPSLA18}
+\citation{ClangThreadSafety}
+\citation{Choi:PLDI02,Engler:SOSP03,Voung:FSE07,Pratikakis:PLDI06,Naik:PLDI06}
+\citation{Voung:FSE07,Engler:SOSP03}
+\citation{Choi:PLDI02,Pratikakis:PLDI06,Naik:PLDI06}
+\citation{Lochmann:EuroSys19,Lu:SOSP07,Lu:FSE18,Joshi:ASE08,Liu:NSDI07}
+\citation{Lochmann:EuroSys19}
+\citation{Fonseca:DSN10,Burckhardt:ASPLOS10,Liu:FSE14,Zhou:EASE15}
+\citation{Li:ASPLOS22,Kastrinis:CC18}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec_introduction}{{1}{1}{Introduction}{section.1}{}}
+\citation{clang}
+\citation{z3}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Motivation}{2}{section.2}\protected@file@percent }
+\newlabel{sec_motivation}{{2}{2}{Motivation}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}A Motivating Example}{2}{subsection.2.1}\protected@file@percent }
+\newlabel{subsec_motivating_example}{{2.1}{2}{A Motivating Example}{subsection.2.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces A null-pointer dereference due to data race in Linux 6.2.\relax }}{2}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig_demo_bug}{{1}{2}{A null-pointer dereference due to data race in Linux 6.2.\relax }{figure.caption.1}{}}
+\citation{Boyapati:OOPSLA02,Anderson:PLDI08,Anderson:PLDI09,Zhou:MICRO19,Flanagan:PASTE01,Flanagan:PLDI00,Sadowski:PLATEAU14,ClangThreadSafety,Blackshear:OOPSLA18}
+\citation{Choi:PLDI02,Engler:SOSP03,Voung:FSE07,Pratikakis:PLDI06,Naik:PLDI06}
+\citation{Voung:FSE07,Engler:SOSP03}
+\citation{Choi:PLDI02,Pratikakis:PLDI06,Naik:PLDI06}
+\citation{Narayanasamy:PLDI07,Sen:PLDI08,Kasikci:SOSP13,Kasikci:ASPLOS12}
+\citation{Li:ASPLOS22,Kastrinis:CC18}
+\citation{Kastrinis:CC18,Cheng:PLDI00}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Challenges}{3}{subsection.2.2}\protected@file@percent }
+\newlabel{subsec_challenges}{{2.2}{3}{Challenges}{subsection.2.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Race Detection by Mining Locking Rules}{3}{section.3}\protected@file@percent }
+\newlabel{sec_technique}{{3}{3}{Race Detection by Mining Locking Rules}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Alias-Aware Rule Mining Method}{3}{subsection.3.1}\protected@file@percent }
+\newlabel{subsec_rule_mining}{{3.1}{3}{Alias-Aware Rule Mining Method}{subsection.3.1}{}}
+\citation{Li:ASPLOS22}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Example of alias graph.\relax }}{4}{figure.caption.2}\protected@file@percent }
+\newlabel{fig_demo_alias_graph}{{2}{4}{Example of alias graph.\relax }{figure.caption.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Pseudocodes to get accessed field and protecting lock.\relax }}{4}{figure.caption.3}\protected@file@percent }
+\newlabel{fig_pseudocode_get_access}{{3}{4}{Pseudocodes to get accessed field and protecting lock.\relax }{figure.caption.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Workflow of locking-rule mining.\relax }}{4}{figure.caption.4}\protected@file@percent }
+\newlabel{fig_workflow}{{4}{4}{Workflow of locking-rule mining.\relax }{figure.caption.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Pseudocodes of lock-set analysis.\relax }}{4}{figure.caption.5}\protected@file@percent }
+\newlabel{fig_pseudocode_lock_set}{{5}{4}{Pseudocodes of lock-set analysis.\relax }{figure.caption.5}{}}
+\citation{Li:ASPLOS22}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Pseudocodes of key-field extraction.\relax }}{5}{figure.caption.6}\protected@file@percent }
+\newlabel{fig_pseudocode_field_extract}{{6}{5}{Pseudocodes of key-field extraction.\relax }{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Pseudocodes of key-field extraction.\relax }}{5}{figure.caption.7}\protected@file@percent }
+\newlabel{fig_pseudocode_access_collect}{{7}{5}{Pseudocodes of key-field extraction.\relax }{figure.caption.7}{}}
+\citation{Li:ASPLOS22}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Example of locking-rule mining.\relax }}{6}{figure.caption.8}\protected@file@percent }
+\newlabel{fig_demo_rule_mining}{{8}{6}{Example of locking-rule mining.\relax }{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Lock-Usage Analysis}{6}{subsection.3.2}\protected@file@percent }
+\newlabel{subsec_lock_usage_analysis}{{3.2}{6}{Lock-Usage Analysis}{subsection.3.2}{}}
+\citation{Galler:ACM64}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Pseudocodes of lock-usage analysis.\relax }}{7}{figure.caption.9}\protected@file@percent }
+\newlabel{fig_pseudocode_lock_usage}{{9}{7}{Pseudocodes of lock-usage analysis.\relax }{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces A false data race filtered out by our lock-usage analysis.\relax }}{7}{figure.caption.10}\protected@file@percent }
+\newlabel{fig_demo_lock_usage}{{10}{7}{A false data race filtered out by our lock-usage analysis.\relax }{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Pattern-Based Estimation}{7}{subsection.3.3}\protected@file@percent }
+\newlabel{subsec_estimation}{{3.3}{7}{Pattern-Based Estimation}{subsection.3.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Three harmful patterns of data races.\relax }}{7}{figure.caption.11}\protected@file@percent }
+\newlabel{fig_pattern}{{11}{7}{Three harmful patterns of data races.\relax }{figure.caption.11}{}}
+\citation{clang}
+\citation{z3}
+\citation{cloc}
+\@writefile{toc}{\contentsline {section}{\numberline {4}\mbox  {RaceMiner}\xspace  Approach}{8}{section.4}\protected@file@percent }
+\newlabel{sec_framework}{{4}{8}{\sys Approach}{section.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces \mbox  {RaceMiner}\xspace  architecture.\relax }}{8}{figure.caption.12}\protected@file@percent }
+\newlabel{fig_architecture}{{12}{8}{\sys architecture.\relax }{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation}{8}{section.5}\protected@file@percent }
+\newlabel{sec_evaluation}{{5}{8}{Evaluation}{section.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Detection results of Linux 6.2.\relax }}{8}{table.caption.13}\protected@file@percent }
+\newlabel{tbl_bug_detection}{{1}{8}{Detection results of Linux 6.2.\relax }{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Bug Detection}{8}{subsection.5.1}\protected@file@percent }
+\newlabel{subsec_bug_detection}{{5.1}{8}{Bug Detection}{subsection.5.1}{}}
+\bibstyle{plain}
+\bibdata{references}
+\bibcite{Anderson:PLDI08}{{1}{}{{}}{{}}}
+\bibcite{Anderson:PLDI09}{{2}{}{{}}{{}}}
+\bibcite{Blackshear:OOPSLA18}{{3}{}{{}}{{}}}
+\bibcite{Boyapati:OOPSLA02}{{4}{}{{}}{{}}}
+\bibcite{Burckhardt:ASPLOS10}{{5}{}{{}}{{}}}
+\bibcite{Cheng:PLDI00}{{6}{}{{}}{{}}}
+\bibcite{Choi:PLDI02}{{7}{}{{}}{{}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}False Positives and Negatives}{9}{subsection.5.2}\protected@file@percent }
+\newlabel{subsec_false_pos_neg}{{5.2}{9}{False Positives and Negatives}{subsection.5.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces A false data race caused by an incorrect locking rule.\relax }}{9}{figure.caption.14}\protected@file@percent }
+\newlabel{fig_demo_false_rule}{{13}{9}{A false data race caused by an incorrect locking rule.\relax }{figure.caption.14}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{9}{section.6}\protected@file@percent }
+\newlabel{sec_discussion}{{6}{9}{Discussion}{section.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Related Work}{9}{section.7}\protected@file@percent }
+\newlabel{sec_related}{{7}{9}{Related Work}{section.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{9}{section.8}\protected@file@percent }
+\newlabel{sec_conclusion}{{8}{9}{Conclusion}{section.8}{}}
+\bibcite{clang}{{8}{}{{}}{{}}}
+\bibcite{ClangThreadSafety}{{9}{}{{}}{{}}}
+\bibcite{cloc}{{10}{}{{}}{{}}}
+\bibcite{Engler:SOSP03}{{11}{}{{}}{{}}}
+\bibcite{Flanagan:PLDI00}{{12}{}{{}}{{}}}
+\bibcite{Flanagan:PASTE01}{{13}{}{{}}{{}}}
+\bibcite{Fonseca:DSN10}{{14}{}{{}}{{}}}
+\bibcite{Galler:ACM64}{{15}{}{{}}{{}}}
+\bibcite{Joshi:ASE08}{{16}{}{{}}{{}}}
+\bibcite{Kasikci:ASPLOS12}{{17}{}{{}}{{}}}
+\bibcite{Kasikci:SOSP13}{{18}{}{{}}{{}}}
+\bibcite{Kastrinis:CC18}{{19}{}{{}}{{}}}
+\bibcite{Li:ASPLOS22}{{20}{}{{}}{{}}}
+\bibcite{Liu:FSE14}{{21}{}{{}}{{}}}
+\bibcite{Liu:NSDI07}{{22}{}{{}}{{}}}
+\bibcite{Lochmann:EuroSys19}{{23}{}{{}}{{}}}
+\bibcite{Lu:FSE18}{{24}{}{{}}{{}}}
+\bibcite{Lu:SOSP07}{{25}{}{{}}{{}}}
+\bibcite{Naik:PLDI06}{{26}{}{{}}{{}}}
+\bibcite{Narayanasamy:PLDI07}{{27}{}{{}}{{}}}
+\bibcite{Pratikakis:PLDI06}{{28}{}{{}}{{}}}
+\bibcite{Sadowski:PLATEAU14}{{29}{}{{}}{{}}}
+\bibcite{Sen:PLDI08}{{30}{}{{}}{{}}}
+\bibcite{Voung:FSE07}{{31}{}{{}}{{}}}
+\bibcite{z3}{{32}{}{{}}{{}}}
+\bibcite{Zhou:EASE15}{{33}{}{{}}{{}}}
+\bibcite{Zhou:MICRO19}{{34}{}{{}}{{}}}
+\providecommand\NAT@force@numbers{}\NAT@force@numbers
+\gdef \@abspage@last{10}

@@ -11,6 +11,7 @@
 	\figcaption{A null-pointer dereference due to data race in Linux 6.2.}
 	\label{fig_demo_bug}
 \end{figure}
+
 Figure~\ref{fig_demo_bug} shows a real null-pointer dereference caused by a 
 data race in the Linux DRM driver. In the DRM driver, the functions {\tt 
 exynos\_drm\_crtc\_atomic\_disable()} and {\tt exynos\_crtc\_handle\_event()} 

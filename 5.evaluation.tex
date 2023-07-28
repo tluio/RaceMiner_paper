@@ -34,9 +34,9 @@ x86-64 architecture.
 				\\ \cline{2-3}
 				\hline
 				\multirow{2}{1.5cm}{\textbf{{\em Data race detection}}} & 
-				Detected data races (real / all) & 257 / 341
+				Detected data races (real / all) & 273 / 341
 				\\ \cline{2-3}
-				& Dropped data races by lock-usage analysis & 59
+				& Dropped data races by lock-usage analysis & 63
 				\\ \cline{2-3}
 				\hline
 				\multirow{5}{1.5cm}{\textbf{{\em Data race estimation}}}
@@ -97,7 +97,11 @@ threshold of the ratio of accesses protected by a specific lock to all accesses
 to 0.6. Our alias-aware rule mining method can drop many false rules and thus 
 only mines xxx rules, which can effectively reduce false data races.
 
-\PP{Data race detection.}
+\PP{Data race detection.} \sys reports 341 data races in the kernel source 
+code. We spent 15 hours on checking these data races and identify that 273 of 
+them are real, with a false positive rate of 19.9\%. Besides, our lock-usage 
+analysis drops 63 false data races and the results shows that it can reduce 
+false positives significantly.
 
 \PP{Data race estimation.} Many data races are benign and can not cause memory 
 or logic bugs, and thus developers are unwilling to put effort into repairing 
@@ -105,7 +109,45 @@ them. We exploit four patterns to detect null-pointer dereferences, infinite
 loop, data inconsistency and unprotected write as introduced in 
 Section~\ref{subsec_estimation}, and find 88 data races in these patterns. We 
 report them to developers and 32 of them have been confirmed and fixed by them. 
-We still wait for response of other data races. Moreover, one of the bluetooth 
-l2cap protocol wonder if \sys can be used in their CI to detect these problems. 
+We still wait for response of other data races. Moreover, one of the developers 
+wonders if \sys can be used in their CI to detect these problems. 
 The results show that our pattern-based estimation can extract harmful data 
 races effectively, and can considerably reduce the workload of developers.
+
+\subsection{False Positives and Negatives}
+\label{subsec_false_pos_neg}
+\sys reports 68 false data races, and through manually checking these false 
+data races, we find that they are introduced for three main reasons:
+
+First, \sys employs an alias-aware rule mining method to deduce locking rules. 
+To improve the precision of mined rules, it assumes that the accessed variable 
+and the protecting lock are stored in the same data structure. Even so, \sys 
+can also deduce some false rules because some developers does not use locks 
+properly. They take a lock/unlock pair to protect accesses to all fields in the 
+same data structure, instead of the exact field should be protected for 
+convenience. As a result, our alias-aware rule mining method infers that 
+accesses to all fields surrounded by the lock/unlock pair should be protected 
+by the lock. This reason causes \sys to report 47 false data races.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/fig_demo_false_rule.pdf}
+	\figcaption{A false data race caused by an incorrect locking rule.}
+	\label{fig_demo_false_rule}
+\end{figure}
+
+Figure~\ref{fig_demo_false_rule} shows a false data race caused by an incorrect 
+locking rule. In this example, only accesses to {\em cmd->t\_state} and {\em 
+cmd->transport\_state} should be protected by the lock {\em 
+cmd->t\_state\_lock}. However, the lock operation is put ahead of the switch 
+statement by developers, making our alias-aware rule mining method deduces that 
+{\em cmd->scsi\_status} and {\em cmd->se\_cmd\_flags} also need to be protected 
+by {\em cmd->t\_state\_lock} mistakenly. Based on this incorrect locking rule, 
+\sys reports a false positive at Line 745 when {\em cmd->se\_cmd\_flags} is 
+accessed in an if statement. Although this data race is a false positive, it 
+can cause performance degradation because the critical zone should have been 
+limited to Lines 899-900.
+
+Second, in order to reduce memory overhead and improve the performance of data 
+passing among different functions, an integer can be divided into several bit 
+vector to represent different data structure fields. However, 
