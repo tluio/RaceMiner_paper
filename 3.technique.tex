@@ -333,15 +333,15 @@ harmful data races match some typical patterns, and propose a {\em
 pattern-based estimation} to extract data races that can cause memory or logic 
 bugs.
 
-At present, we propose four patterns that can cause null-pointer dereference, 
-infinite loop, data inconsistency and unprotected write, because these four 
-patterns are common and dangerous in OSes. The four patterns are shown in 
+At present, we propose three patterns that can cause null-pointer dereference, 
+data inconsistency and unprotected write, because these three patterns are 
+common and dangerous in OSes. The three patterns are shown in 
 Figure~\ref{fig_pattern}, and we assume that accesses to the fields of {\em 
 dev} should be protected by {\em dev->lock}.
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.85\linewidth]{figures/fig_pattern.pdf}
+	\includegraphics[width=1\linewidth]{figures/fig_pattern.pdf}
 	\figcaption{Three harmful patterns of data races.}
 	\label{fig_pattern}
 \end{figure}
@@ -353,11 +353,13 @@ dev} should be protected by {\em dev->lock}.
 	the if statement is checked to be true. To recognize such pattern, the 
 	analysis first locates the data race, if it is checked by an if statement 
 	and then dereferenced, a possible null-pointer dereference can occur.
-	\item \PP{Infinite loop.} The condition of the while statement does not 
-	protected by {\em dev->lock}. This can cause a infinite loop when {\em 
-	dev->cnt} is assigned with a non-zero value every time before it is checked 
-	by the while statement. The analysis detects such bugs by judge whether the 
-	data race acts as a condition of a loop statement.
+	%\item \PP{Infinite loop.} The condition of the while statement does not 
+	%protected by {\em dev->lock}. This can cause a infinite loop when {\em 
+	%dev->cnt} is assigned with a non-zero value every time before it is 
+	%checked 
+	%by the while statement. The analysis detects such bugs by judge whether 
+	%the 
+	%data race acts as a condition of a loop statement.
 	\item \PP{Data inconsistency.} Two different fields of the same data 
 	structure are accessed without acquiring {\em dev->lock}. This can cause a 
 	data inconsistency when the data structure field {\em dev->clock} is 

@@ -39,11 +39,11 @@ x86-64 architecture.
 				& Dropped data races by lock-usage analysis & 63
 				\\ \cline{2-3}
 				\hline
-				\multirow{5}{1.5cm}{\textbf{{\em Data race estimation}}}
+				\multirow{4}{1.5cm}{\textbf{{\em Data race estimation}}}
 				& Null-pointer dereference (confirmed / all) & 15 / 20
 				\\ \cline{2-3}
-				& Infinite loop (confirmed / all) & 0 / 1
-				\\ \cline{2-3}
+				%& Infinite loop (confirmed / all) & 0 / 1
+				%\\ \cline{2-3}
 				& Data inconsistency (confirmed / all) & 7 / 10
 				\\ \cline{2-3}
 				& Unprotected write (confirmed / all) & 10 / 57
@@ -105,8 +105,8 @@ false positives significantly.
 
 \PP{Data race estimation.} Many data races are benign and can not cause memory 
 or logic bugs, and thus developers are unwilling to put effort into repairing 
-them. We exploit four patterns to detect null-pointer dereferences, infinite 
-loop, data inconsistency and unprotected write as introduced in 
+them. We exploit three patterns to detect null-pointer dereferences, data 
+inconsistency and unprotected write as introduced in 
 Section~\ref{subsec_estimation}, and find 88 data races in these patterns. We 
 report them to developers and 32 of them have been confirmed and fixed by them. 
 We still wait for response of other data races. Moreover, one of the developers 
@@ -116,8 +116,9 @@ races effectively, and can considerably reduce the workload of developers.
 
 \subsection{False Positives and Negatives}
 \label{subsec_false_pos_neg}
-\sys reports 68 false data races, and through manually checking these false 
-data races, we find that they are introduced for three main reasons:
+\PP{False positives.} \sys reports 68 false data races, and through manually 
+checking these false data races, we find that they are introduced for three 
+main reasons:
 
 First, \sys employs an alias-aware rule mining method to deduce locking rules. 
 To improve the precision of mined rules, it assumes that the accessed variable 
@@ -145,9 +146,99 @@ statement by developers, making our alias-aware rule mining method deduces that
 by {\em cmd->t\_state\_lock} mistakenly. Based on this incorrect locking rule, 
 \sys reports a false positive at Line 745 when {\em cmd->se\_cmd\_flags} is 
 accessed in an if statement. Although this data race is a false positive, it 
-can cause performance degradation because the critical zone should have been 
-limited to Lines 899-900.
+can cause performance degradation because the critical zone protected by the 
+lock/unlock pair should have been limited to Lines 899-900.
 
 Second, in order to reduce memory overhead and improve the performance of data 
 passing among different functions, an integer can be divided into several bit 
-vector to represent different data structure fields. However, 
+vectors to represent different data structure fields. However, in the LLVM 
+bytecode, accesses to these vectors are divided into a LOAD operation and 
+several bit operations, and thus \sys can not distinguish accesses to different 
+fields and reports false data races, because not all these fields should be 
+protected by a lock. This reason causes \sys to report 14 false data races.
+
+Apart from false data races caused by the two main reasons, there are still 7 
+other data races. \sys regards function without caller functions in a kernel 
+module as entry function and starts analysis from these entries. However, in 4 
+cases, an assertion is put at the beginning of the entry function, to guarantee 
+that the required lock is held, but \sys does not consider assertions and the 
+subsequent accesses are regarded as unprotected. Other 3 false data races are 
+accessed with {\em READ\_ONCE} or {\em WRITE\_ONCE}, and can not cause serious 
+issues.
+
+\PP{False negatives.} \sys may still miss some real data races for three main 
+reasons:
+
+First, our alias-aware mining method only considers accessed variables and 
+protecting locks that exist in the same data structure. However, on the one 
+hand, some accesses to variables may be protected by a global lock in a module, 
+and this lock is used to protect accesses to various variables and does 
+not exist in any data structure. On the other hand, some special lock 
+-acquiring/release functions (such as {\em rcu\_read\_lock} and {\em 
+rcu\_read\_unlock}) does not have an argument and is not handled in an alias 
+graph. Therefore, locking rules in the above two cases can be missed by our 
+alias-aware mining method. As a result, data races violated these locking rules 
+can not detected by \sys.
+
+Second, \sys does not handle function-pointer calls, and thus it can not build 
+complete call graphs for inter-procedural analysis. However, \sys starts 
+from functions without caller functions and performs analysis along call 
+graphs. And as a result, functions that are only called indirectly through 
+function pointers can not be analyzed by \sys, and thus data races involving 
+code reached through function-pointer calls can be missed.
+
+Finally, \sys exploits a lock-usage analysis to filter out false data races 
+caused by code paths that can not execute concurrently. Specifically, the 
+lock-usage analysis extracts all functions that are reachable from the lock 
+initialization functions in a call graph with the union-find set, and assumes 
+that these functions can not execute concurrently. However, some functions can 
+be called at multiple program sites, and some of the program sites may be not 
+reachable from lock initialization functions, but data races exist in these 
+functions are are all dropped by our lock-usage analysis.
+
+\subsection{Case Studies of the Found Harmful Data Races}
+\label{subsec_case_study}
+
+Figure~\ref{fig_case_bugs} shows three data races found by \sys in Linux 6.2,
+and they have been confirmed by Linux kernel developers.
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=1\linewidth]{figures/fig_case_bugs.pdf}
+	\figcaption{Three real data races found by \sys in Linux 6.2.}
+	\label{fig_case_bugs}
+\end{figure*}
+
+\PP{Null-pointer dereference in the HDA sound driver.} In 
+Figure~\ref{fig_case_bugs}(a), the functions {\em snd\_hdac\_regmap\_exit()} 
+and {\em snd\_hdac\_regmap\_sync()} can execute concurrently. In Thread 2, the 
+variable {\em codec->regmap} is checked by an if statement in the function {\em 
+snd\_hdac\_regmap\_sync()}. Right after the condition of the if statement is 
+calculated to be true, the variable {\em codec->regmap} is set to be NULL by 
+the function {\em snd\_hdac\_regmap\_exit()} in Thread 2. And then the function 
+{\em regcache\_sync()} is called in Thread 1, with the argument {\em 
+codec->regmap}, after acquiring the lock {\em codec->regmap\_lock}. In the 
+called function, the variable {\em codec->regmap\_lock} is dereferenced through 
+{\em map->lock()}. In this execution case, the data structure field {\em 
+codec->regmap} is first assigned with NULL in Thread 1, and then dereferenced 
+in Thread 2, and thus cause a null-pointer dereference.
+
+\PP{Data inconsistency in the GFS2 file system.} In 
+Figure~\ref{fig_case_bugs}(b), the functions {\em gfs2\_show\_options()} and 
+{\em gfs2\_reconfigure()} can execute concurrently. In Thread 1, several fields 
+such as {\em gt\_statfs\_quantum} and {\em gt\_quota\_quantum} of {\em 
+sdp->sd\_tune} are accessed and their values are printed to logs. However, if 
+the value of {\em gt->gt\_quota\_quantum} is updated by the function {\em 
+gfs2\_reconfigure()} in Thread 2 right before the access to it in Thread 1, the 
+values of different fields recorded in logs can be inconsistent.
+
+\PP{Unprotected write in the LPFC SCSI driver.} In 
+Figure~\ref{fig_case_bugs}(c), the value of the shared variable {\em 
+phba->fcf.fcf\_flag} is set to 0 by the function {\em 
+lpfc\_unregister\_fcf\_rescan()}, without acquiring the lock {\em 
+phba->hbalock}, and this can cause double-fetch in several program sites. For 
+example, if {\em phba->fcf.fcf\_flag} is set to 0 by Thread 2 between the two 
+accesses to it in the function {\em lpfc\_register\_fcf()} in Thread 1 (Lines 
+1873 and 1874), the values of the two accesses can differ, causing 
+unpredictable behavior.
+
