@@ -109,9 +109,9 @@ checked OS kernel. Overall, we make three main contributions in this paper:
 	propose three key techniques to address	these challenges: (T1) an {\em 
 	alias-aware rule mining method} to automatically deduce locking rules; (T2) 
 	a {\em lock-usage analysis} to filter out false positives caused by 
-	concurrency; (T3) a {\em pattern-based estimation} to extract harmful data 
-	races that can trigger memory or logical bugs such as null-pointer 
-	dereferences and data inconsistency.
+	code paths that can not execute concurrently; (T3) a {\em pattern-based 
+	estimation} to extract harmful data races that can trigger memory or 
+	logical bugs such as null-pointer dereferences and data inconsistency.	
 	\item Based on these three key techniques, we design a practical static 
 	analysis approach named \sys, to effectively detect data races and 
 	estimate the harmfulness of these data races in OS kernels.

@@ -239,6 +239,6 @@ lpfc\_unregister\_fcf\_rescan()}, without acquiring the lock {\em
 phba->hbalock}, and this can cause double-fetch in several program sites. For 
 example, if {\em phba->fcf.fcf\_flag} is set to 0 by Thread 2 between the two 
 accesses to it in the function {\em lpfc\_register\_fcf()} in Thread 1 (Lines 
-1873 and 1874), the values of the two accesses can differ, causing 
-unpredictable behavior.
+1873 and 1874), the values of the two accesses can be different, causing 
+unpredictable behaviors.
 

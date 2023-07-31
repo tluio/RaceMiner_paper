@@ -28,6 +28,20 @@
 	year = {2021}
 }
 
+@misc{FreeBSD,
+	key = {{FreeBSD}},
+	title = {{FreeBSD}: The {FreeBSD} Project},
+	note = {\url{https://www.freebsd.org/}},
+	year = {2023}
+}
+
+@misc{NetBSD,
+	key = {{NetBSD}},
+	title = {{NetBSD}: The {NetBSD} Project},
+	note = {\url{https://www.netbsd.org/}},
+	year = {2023}
+}
+
 @inproceedings{Boyapati:OOPSLA02,
 	title={Ownership types for safe programming: Preventing data races and 
 	deadlocks},
@@ -84,7 +98,7 @@
 @inproceedings{Flanagan:PLDI00,
 	title={Type-based race detection for Java},
 	author={Flanagan, Cormac and Freund, Stephen N},
-	booktitle={Proceedings of the ACM SIGPLAN 2000 conference on Programming 
+	booktitle={Proceedings of the 21rd ACM SIGPLAN Conference on Programming 
 	Language Design and Implementation (PLDI)},
 	pages={219--232},
 	year={2000},
@@ -126,7 +140,7 @@
 @inproceedings{Lu:FSE18,
 	title={Cloudraid: hunting concurrency bugs in the cloud via log-mining},
 	author={Lu, Jie and Li, Feng and Li, Lian and Feng, Xiaobing},
-	booktitle={Proceedings of the 2018 26th ACM joint meeting on European 
+	booktitle={Proceedings of the 26th ACM Joint Meeting on European 
 	Software Engineering Conference and Symposium on the Foundations of 
 	Software Engineering (ESEC/FSE)},
 	pages={3--14},
@@ -327,7 +341,7 @@
 @inproceedings{Kasikci:ASPLOS12,
 	title={Data races vs. data race bugs: telling the difference with portend},
 	author={Kasikci, Baris and Zamfir, Cristian and Candea, George},
-	booktitle={Proceedings of the seventeenth international conference on 
+	booktitle={Proceedings of the 17th International Conference on 
 	Architectural Support for Programming Languages and Operating Systems 
 	(ASPLOS12)},
 	pages={185--198},
@@ -339,7 +353,7 @@
 	title={Modular interprocedural pointer analysis using access paths: design, 
 	implementation, and evaluation},
 	author={Cheng, Ben-Chung and Hwu, Wen-Mei W},
-	booktitle={Proceedings of the ACM SIGPLAN 2000 conference on Programming 
+	booktitle={Proceedings of the 21st ACM SIGPLAN Conference on Programming 	
 	Language Design and Implementation (PLDI)},
 	pages={57--69},
 	year={2000},
@@ -356,4 +370,147 @@
 	year={1964},
 	publisher={ACM New York, NY, USA},
 	note={\url{https://doi.org/10.1145/364099.364331}}
+}
+
+@article{Hind:TOPLAS99,
+	title={Interprocedural pointer alias analysis},
+	author={Hind, Michael and Burke, Michael and Carini, Paul and Choi, 
+	Jong-Deok},
+	journal={ACM Transactions on Programming Languages and Systems (TOPLAS)},
+	volume={21},
+	number={4},
+	pages={848--894},
+	year={1999},
+	publisher={ACM New York, NY, USA},
+	note={\url{https://doi.org/10.1145/325478.325519}}
+}
+
+@inproceedings{Zhang:ISPEC15,
+	title={Lightweight function pointer analysis},
+	author={Zhang, Wei and Zhang, Yu},
+	booktitle={Proceedings of the 11th International Conference on Information 
+	Security Practice and Experience (ISPEC)},
+	pages={439--453},
+	year={2015},
+	organization={Springer},
+	note={\url{https://doi.org/10.1007/978-3-319-17533-1_30}}
+}
+
+@inproceedings{Heintze:PLDI01,
+	title={Demand-driven pointer analysis},
+	author={Heintze, Nevin and Tardieu, Olivier},
+	booktitle={Proceedings of the 22nd ACM SIGPLAN Conference on Programming 
+	Language Design and Implementation (PLDI)},
+	pages={24--34},
+	year={2001},
+	note={\url{https://doi.org/10.1145/378795.378802}}
+}
+
+@inproceedings{Bai:ATC22,
+	title={{DLOS}: Effective Static Detection of Deadlocks in {OS} Kernels},
+	author={Bai, Jia-Ju and Li, Tuo and Hu, Shi-Min},
+	booktitle={Proceedings of the 2022 USENIX Annual Technical Conference 
+	(USENIX ATC)},
+	pages={367--382},
+	year={2022},
+	note={\url{https://www.usenix.org/conference/atc22/presentation/bai}}
+}
+
+@inproceedings{Bai:ATC19,
+	title={Effective static analysis of concurrency $\{$Use-After-Free$\}$ bugs 
+	in linux device drivers},
+	author={Bai, Jia-Ju and Lawall, Julia and Chen, Qiu-Liang and Hu, Shi-Min},
+	booktitle={Proceedings of the 2019 USENIX Annual Technical Conference 
+	(USENIX ATC)},
+	pages={255--268},
+	year={2019},
+	note={\url{https://www.usenix.org/conference/atc19/presentation/bai}}
+}
+
+@inproceedings{Vu:SoICT12,
+	title={A type system for finding upper resource bounds of multi-threaded 
+	programs with nested transactions},
+	author={Vu, Xuan-Tung and Tran, Mai Thuong and Truong, Anh-Hoang and 
+	Steffen, Martin},
+	booktitle={Proceedings of the 3rd Symposium on Information and 
+	Communication Technology (SoICT)},
+	pages={21--30},
+	year={2012},
+	note={\url{https://doi.org/10.1145/2350716.2350722}}
+}
+
+@inproceedings{Boyapati:OOPSLA02,
+	title={Ownership types for safe programming: Preventing data races and 
+	deadlocks},
+	author={Boyapati, Chandrasekhar and Lee, Robert and Rinard, Martin},
+	booktitle={Proceedings of the 17th ACM SIGPLAN Conference on 
+	Object-Oriented Programming, Systems, Languages, and Applications (OOPSLA)},
+	pages={211--230},
+	year={2002},
+	note={\url{https://doi.org/10.1145/582419.582440}}
+}
+
+@inproceedings{Marion:TAMC14,
+	title={Complexity information flow in a multi-threaded imperative language},
+	author={Marion, Jean-Yves and P{\'e}choux, Romain},
+	booktitle={Proceedings of the 11th International Conference on Theory and 
+	Applications of Models of Computation (TAMC)},
+	pages={124--140},
+	year={2014},
+	organization={Springer},
+	note={\url{https://doi.org/10.1007/978-3-319-06089-7_9}}
+}
+
+@inproceedings{Ocallahan:PPoPP03,
+	title={Hybrid dynamic data race detection},
+	author={O'callahan, Robert and Choi, Jong-Deok},
+	booktitle={Proceedings of the 9th ACM SIGPLAN Symposium on Principles and 
+	Practice of Parallel Programming (PPoPP)},
+	pages={167--178},
+	year={2003},
+	note={\url{https://doi.org/10.1145/781498.781528}}
+}
+
+@inproceedings{Serebryany:WBIA09,
+	title={{ThreadSanitizer}: data race detection in practice},
+	author={Serebryany, Konstantin and Iskhodzhanov, Timur},
+	booktitle={Proceedings of the 2009 Workshop on Binary Instrumentation and 
+	Applications (WBIA)},
+	pages={62--71},
+	year={2009},
+	note={\url{https://doi.org/10.1145/1791194.1791203}}
+}
+
+@inproceedings{Marino:PLDI09,
+	title={{LiteRace}: Effective sampling for lightweight data-race detection},
+	author={Marino, Daniel and Musuvathi, Madanlal and Narayanasamy, Satish},
+	booktitle={Proceedings of the 30th ACM SIGPLAN Conference on Programming 
+	Language Design and Implementation (PLDI)},
+	pages={134--143},
+	year={2009},
+	note={\url{https://doi.org/10.1145/1542476.1542491}}
+}
+
+@inproceedings{Vojdani:ASE16,
+	title={Static race detection for device drivers: the {Goblint} approach},
+	author={Vojdani, Vesal and Apinis, Kalmer and R{\~o}tov, Vootele and Seidl, 
+	Helmut and Vene, Varmo and Vogler, Ralf},
+	booktitle={Proceedings of the 31st IEEE/ACM International Conference on 
+	Automated Software Engineering (ASE)},
+	pages={391--402},
+	year={2016},
+	note={\url{https://doi.org/10.1145/2970276.2970337}}
+}
+
+@inproceedings{Deligiannis:ASE15,
+	title={Fast and precise symbolic analysis of concurrency bugs in device 
+	drivers},
+	author={Deligiannis, Pantazis and Donaldson, Alastair F and Rakamaric, 
+	Zvonimir},
+	booktitle={2015 30th IEEE/ACM International Conference on Automated 
+	Software Engineering (ASE)},
+	pages={166--177},
+	year={2015},
+	organization={IEEE},
+	note={\url{https://doi.org/10.1109/ASE.2015.30}}
 }
