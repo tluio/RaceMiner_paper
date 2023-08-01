@@ -76,7 +76,7 @@ Table~\ref{tbl_bug_detection} shows the results, and source code lines are
 counted by CLOC~\cite{cloc}. From the results, we have the following findings:
 
 \PP{Code analysis.} \sys can scale to large code bases of OS kernels, and it in 
-total analyze xxxM lines of code in xxxK source code files within xxx hours. 
+total analyzes xxxM lines of code in xxxK source code files within xxx hours. 
 The remaining xxxM lines of code in xxxK source files are not analyzed, as they 
 are not enabled by the {\em allyesconfig} for the x86-64 architecture. We 
 believe that \sys can also find more data races in other architectures with 
@@ -84,15 +84,15 @@ proper configuration.
 
 \PP{Locking-rule mining.} An OS kernel has a large code base with numerous 
 variables. Handling all variables when mining locking rules can introduce much 
-overhead. However, we observe that a variable tend to be protected by the lock 
+overhead. However, we observe that a variable tends to be protected by the lock 
 stored in the same data structure as the accessed variable. Based on this 
-observation, our locking-rule mining method first extract a key field by 
+observation, our locking-rule mining method first extracts a key field by 
 finding whether there exists any access to it that is protected by a lock 
 stored in the same data structure. This method drops xxx\% variables (xxx out 
-xxx) that need to handled when mining locking rules, and thus can reduce 
+xxx) that need to be handled when mining locking rules, and thus can reduce 
 overhead significantly. After extracting key fields, our locking-rule mining 
-method collect all accessed to these key fields, and then deducing locking-rule 
-based on statistic. In this paper, given a data structure field, we set the 
+method collects all accesses to these key fields, and then deduces locking-rule 
+based on statistics. In this paper, given a data structure field, we set the 
 threshold of the ratio of accesses protected by a specific lock to all accesses 
 to 0.6. Our alias-aware rule mining method can drop many false rules and thus 
 only mines xxx rules, which can effectively reduce false data races.
@@ -100,7 +100,7 @@ only mines xxx rules, which can effectively reduce false data races.
 \PP{Data race detection.} \sys reports 341 data races in the kernel source 
 code. We spent 15 hours on checking these data races and identify that 273 of 
 them are real, with a false positive rate of 19.9\%. Besides, our lock-usage 
-analysis drops 63 false data races and the results shows that it can reduce 
+analysis drops 63 false data races and the results show that it can reduce 
 false positives significantly.
 
 \PP{Data race estimation.} Many data races are benign and can not cause memory 
@@ -109,8 +109,8 @@ them. We exploit three patterns to detect null-pointer dereferences, data
 inconsistency and unprotected write as introduced in 
 Section~\ref{subsec_estimation}, and find 88 data races in these patterns. We 
 report them to developers and 32 of them have been confirmed and fixed by them. 
-We still wait for response of other data races. Moreover, one of the developers 
-wonders if \sys can be used in their CI to detect these problems. 
+We still wait for the response of other data races. Moreover, one of the 
+developers wonders if \sys can be used in their CI to detect these problems. 
 The results show that our pattern-based estimation can extract harmful data 
 races effectively, and can considerably reduce the workload of developers.
 
@@ -123,9 +123,9 @@ main reasons:
 First, \sys employs an alias-aware rule mining method to deduce locking rules. 
 To improve the precision of mined rules, it assumes that the accessed variable 
 and the protecting lock are stored in the same data structure. Even so, \sys 
-can also deduce some false rules because some developers does not use locks 
+can also deduce some false rules because some developers do not use locks 
 properly. They take a lock/unlock pair to protect accesses to all fields in the 
-same data structure, instead of the exact field should be protected for 
+same data structure, instead of the exact field that should be protected for 
 convenience. As a result, our alias-aware rule mining method infers that 
 accesses to all fields surrounded by the lock/unlock pair should be protected 
 by the lock. This reason causes \sys to report 47 false data races.
@@ -141,7 +141,7 @@ Figure~\ref{fig_demo_false_rule} shows a false data race caused by an incorrect
 locking rule. In this example, only accesses to {\em cmd->t\_state} and {\em 
 cmd->transport\_state} should be protected by the lock {\em 
 cmd->t\_state\_lock}. However, the lock operation is put ahead of the switch 
-statement by developers, making our alias-aware rule mining method deduces that 
+statement by developers, making our alias-aware rule mining method deduce that 
 {\em cmd->scsi\_status} and {\em cmd->se\_cmd\_flags} also need to be protected 
 by {\em cmd->t\_state\_lock} mistakenly. Based on this incorrect locking rule, 
 \sys reports a false positive at Line 745 when {\em cmd->se\_cmd\_flags} is 
@@ -158,13 +158,13 @@ fields and reports false data races, because not all these fields should be
 protected by a lock. This reason causes \sys to report 14 false data races.
 
 Apart from false data races caused by the two main reasons, there are still 7 
-other data races. \sys regards function without caller functions in a kernel 
-module as entry function and starts analysis from these entries. However, in 4 
-cases, an assertion is put at the beginning of the entry function, to guarantee 
-that the required lock is held, but \sys does not consider assertions and the 
-subsequent accesses are regarded as unprotected. Other 3 false data races are 
-accessed with {\em READ\_ONCE} or {\em WRITE\_ONCE}, and can not cause serious 
-issues.
+other data races. \sys regards a function without caller functions in a kernel 
+module as the entry function and starts analysis from these entries. However, 
+in 4 cases, an assertion is put at the beginning of the entry function, to 
+guarantee that the required lock is held, but \sys does not consider assertions 
+and the subsequent accesses are regarded as unprotected. The other 3 false data 
+races are accessed with {\em READ\_ONCE} or {\em WRITE\_ONCE}, and can not 
+cause serious issues.
 
 \PP{False negatives.} \sys may still miss some real data races for three main 
 reasons:
@@ -175,10 +175,10 @@ hand, some accesses to variables may be protected by a global lock in a module,
 and this lock is used to protect accesses to various variables and does 
 not exist in any data structure. On the other hand, some special lock 
 -acquiring/release functions (such as {\em rcu\_read\_lock} and {\em 
-rcu\_read\_unlock}) does not have an argument and is not handled in an alias 
+rcu\_read\_unlock}) do not have an argument and are not handled in an alias 
 graph. Therefore, locking rules in the above two cases can be missed by our 
-alias-aware mining method. As a result, data races violated these locking rules 
-can not detected by \sys.
+alias-aware mining method. As a result, data races that violate these locking 
+rules can not be detected by \sys.
 
 Second, \sys does not handle function-pointer calls, and thus it can not build 
 complete call graphs for inter-procedural analysis. However, \sys starts 
@@ -193,8 +193,8 @@ lock-usage analysis extracts all functions that are reachable from the lock
 initialization functions in a call graph with the union-find set, and assumes 
 that these functions can not execute concurrently. However, some functions can 
 be called at multiple program sites, and some of the program sites may be not 
-reachable from lock initialization functions, but data races exist in these 
-functions are are all dropped by our lock-usage analysis.
+reachable from the lock initialization functions, but data races that exist in 
+these functions are all dropped by our lock-usage analysis.
 
 \subsection{Case Studies of the Found Harmful Data Races}
 \label{subsec_case_study}
