@@ -45,29 +45,29 @@ Static Race Detection in OS Kernels by Mining Locking Rules}
 	
 To take advantage of multiple-core architecture of modern CPUs, an operating 
 system (OS) is expected to handle concurrency, inevitably introducing many 
-concurrent issues. And data race is one of the most harmful concurrent issues 
-that can trigger memory or logical bugs. A data race is caused by wrongly 
+concurrency issues. And data race is one of the most harmful concurrency issues 
+that can trigger memory or logic bugs. Data races are caused by wrongly 
 accessing shared data in different threads. To ensure correct access to shared 
 data, fine-grained locking mechanisms are introduced. However, it is hard to 
-determine whether a lock should be used for a specific variable (locking rules) 
-even for an expert developer, due to poor documentation and complicated logic 
-of OS code. As a result, OS kernel is prone to data races, because necessary 
-locks may be missed by mistake. Static analysis is a common technique to help 
-improve code quality, but it is quite challenging to detect data races in OS 
-kernels automatically, because of lack of knowledge of locking rules and high 
-complexity of concurrent execution.
+determine whether a lock should be held when accessing a specific variable 
+(locking rules) even for an expert developer, because of poor document and 
+complicated logic of OS code. As a result, OS kernel is prone to data races, 
+because necessary locks may be missed by mistake. Static analysis is a common 
+technique to improve code quality, but it is quite challenging to detect data 
+races in OS kernels automatically, due to lack of knowledge of locking rules 
+and high complexity of concurrent execution.
 
 In this paper, we design a practical static analysis approach named \sys, to 
-effectively detect harmful races that can trigger memory or logical bugs in OS 
-kernels by mining locking rules. \sys first employs an alias-aware rule mining 
-method to automatically deduce locking rules, and detects data races caused by 
-violation of these rules. And then performs a lock-usage analysis to filter out 
-false positives caused by concurrency. At last, \sys extracts harmful data 
-races from all detected data races through a pattern-based estimation. We have 
-evaluated \sys on Linux 6.2, and find xxx data races, with a false positive 
-rate of xxx. Among these data races, xxx are estimated to be harmful. We have 
-reported these harmful bugs to Linux kernel developers, and xxx of them have 
-been confirmed.
+effectively detect data races and estimate their harmfulness in OS kernels by 
+mining locking rules. \sys first employs an alias-aware rule mining method to 
+automatically deduce locking rules, and detects data races caused by violation 
+of these rules. And then performs a lock-usage analysis to filter out false 
+positives caused by code that can not execute concurrently. At last, \sys 
+extracts harmful data races from all detected data races through a 
+pattern-based estimation. We have evaluated \sys on Linux 6.2, and find 273 
+data races, with a false positive rate of 19.9\%. Among these data races, 88 
+are estimated to be harmful. We have reported these harmful data races to Linux 
+kernel developers, and 32 of them have been confirmed.
 
 \end{abstract}
 

@@ -6,8 +6,8 @@ In this paper, we develop a novel static approach named \sys to detect data
 races in OS kernels by mining locking rules. It consists of three key 
 techniques, including an alias-aware rule mining method to automatically deduce 
 locking rules, a lock-usage analysis to filter out false positives caused by 
-code paths that can not execute concurrently and a pattern-based estimation to 
-extract harmful data races that can trigger memory or logical bugs such as 
-null-pointer dereferences and data inconsistency. In the evaluation, \sys finds 
-88 real harmful data races, and 32 of them have been confirmed by the 
-developers.
+code that can not execute concurrently and a pattern-based estimation to 
+extract harmful data races that can trigger memory or logic bugs such as 
+null-pointer dereferences, data inconsistencies and double fetches. In the 
+evaluation, \sys finds 88 real harmful data races, and 32 of them have been 
+confirmed by the developers.

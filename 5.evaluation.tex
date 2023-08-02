@@ -25,12 +25,10 @@ x86-64 architecture.
 				& Source code lines (analyzed/all) & xxxM/xxxM 
 				\\ \cline{2-3}
 				\hline
-				\multirow{3}{1.5cm}{\textbf{{\em Locking-rule mining}}} & 
+				\multirow{2}{1.5cm}{\textbf{{\em Locking-rule mining}}} & 
 				Key fields / total variables& 
 				\\ \cline{2-3}
 				& Mined locking rules &
-				\\ \cline{2-3}
-				& Protected field accesses / all accesses & 0.6
 				\\ \cline{2-3}
 				\hline
 				\multirow{2}{1.5cm}{\textbf{{\em Data race detection}}} & 
@@ -39,14 +37,12 @@ x86-64 architecture.
 				& Dropped data races by lock-usage analysis & 63
 				\\ \cline{2-3}
 				\hline
-				\multirow{4}{1.5cm}{\textbf{{\em Data race estimation}}}
+				\multirow{4}{1.5cm}{\textbf{{\em Harmfulness estimation}}}
 				& Null-pointer dereference (confirmed / all) & 15 / 20
 				\\ \cline{2-3}
-				%& Infinite loop (confirmed / all) & 0 / 1
-				%\\ \cline{2-3}
 				& Data inconsistency (confirmed / all) & 7 / 10
 				\\ \cline{2-3}
-				& Unprotected write (confirmed / all) & 10 / 57
+				& Double fetch (confirmed / all) & 10 / 57
 				\\ \cline{2-3}
 				& Total harmful data races (confirmed / all) & 32 / 88
 				\\ \cline{2-3}
@@ -67,11 +63,11 @@ x86-64 architecture.
 \label{subsec_bug_detection}
 
 We configure \sys with common lock-acquiring/release functions (like {\tt 
-spin\_lock and spin\_unlock}) to perform lock-set analysis to extract key 
-fields and mine locking rules, and lock-initialization functions (like {\tt 
-spin\_lock\_init}) to filter our false data races caused by code paths that 
-can not execute concurrently. And then run \sys to automatically check the 
-kernel source code. We manually check all the data races found by \sys, and 
+spin\_lock} and {\tt spin\_unlock}) to perform lock-set analysis to extract key 
+fields and collect field accesses, and lock-initialization functions (like {\tt 
+spin\_lock\_init}) to filter our false data races caused by code that can not 
+execute concurrently. And then run \sys to automatically check the kernel 
+source code. We manually check all the data races found by \sys, and 
 Table~\ref{tbl_bug_detection} shows the results, and source code lines are 
 counted by CLOC~\cite{cloc}. From the results, we have the following findings:
 
@@ -84,29 +80,29 @@ proper configuration.
 
 \PP{Locking-rule mining.} An OS kernel has a large code base with numerous 
 variables. Handling all variables when mining locking rules can introduce much 
-overhead. However, we observe that a variable tends to be protected by the lock 
-stored in the same data structure as the accessed variable. Based on this 
-observation, our locking-rule mining method first extracts a key field by 
-finding whether there exists any access to it that is protected by a lock 
-stored in the same data structure. This method drops xxx\% variables (xxx out 
-xxx) that need to be handled when mining locking rules, and thus can reduce 
-overhead significantly. After extracting key fields, our locking-rule mining 
-method collects all accesses to these key fields, and then deduces locking-rule 
-based on statistics. In this paper, given a data structure field, we set the 
+overhead. However, we observe that the variable that is accessed and the lock 
+to protect the access often exist in the same data structure. Based on this 
+observation, our locking-rule mining method extracts key fields by finding 
+whether there exists any access to it that is protected by a lock stored in the 
+same data structure. This method drops xxx\% variables (xxx out xxx) that need 
+to be handled when mining locking rules, and thus can reduce overhead 
+significantly. After extracting key fields, our locking-rule mining method 
+collects all accesses to these key fields, and then deduces locking rules based 
+on statistics. In this paper, given a data structure field, we set the 
 threshold of the ratio of accesses protected by a specific lock to all accesses 
 to 0.6. Our alias-aware rule mining method can drop many false rules and thus 
-only mines xxx rules, which can effectively reduce false data races.
+only mines xxx locking rules, which can effectively reduce false data races.
 
 \PP{Data race detection.} \sys reports 341 data races in the kernel source 
 code. We spent 15 hours on checking these data races and identify that 273 of 
 them are real, with a false positive rate of 19.9\%. Besides, our lock-usage 
-analysis drops 63 false data races and the results show that it can reduce 
-false positives significantly.
+analysis drops 63 false data races and the results show that this strategy can 
+reduce false positives significantly.
 
 \PP{Data race estimation.} Many data races are benign and can not cause memory 
 or logic bugs, and thus developers are unwilling to put effort into repairing 
 them. We exploit three patterns to detect null-pointer dereferences, data 
-inconsistency and unprotected write as introduced in 
+inconsistencies and double fetches as introduced in 
 Section~\ref{subsec_estimation}, and find 88 data races in these patterns. We 
 report them to developers and 32 of them have been confirmed and fixed by them. 
 We still wait for the response of other data races. Moreover, one of the 
@@ -152,14 +148,14 @@ lock/unlock pair should have been limited to Lines 899-900.
 Second, in order to reduce memory overhead and improve the performance of data 
 passing among different functions, an integer can be divided into several bit 
 vectors to represent different data structure fields. However, in the LLVM 
-bytecode, accesses to these vectors are divided into a LOAD operation and 
+bytecode, accesses to these vectors are divided into a load operation and 
 several bit operations, and thus \sys can not distinguish accesses to different 
 fields and reports false data races, because not all these fields should be 
 protected by a lock. This reason causes \sys to report 14 false data races.
 
 Apart from false data races caused by the two main reasons, there are still 7 
-other data races. \sys regards a function without caller functions in a kernel 
-module as the entry function and starts analysis from these entries. However, 
+other data races. \sys regards functions without caller functions in a kernel 
+module as the entry functions and starts analysis from these entries. However, 
 in 4 cases, an assertion is put at the beginning of the entry function, to 
 guarantee that the required lock is held, but \sys does not consider assertions 
 and the subsequent accesses are regarded as unprotected. The other 3 false data 
@@ -188,13 +184,13 @@ function pointers can not be analyzed by \sys, and thus data races involving
 code reached through function-pointer calls can be missed.
 
 Finally, \sys exploits a lock-usage analysis to filter out false data races 
-caused by code paths that can not execute concurrently. Specifically, the 
-lock-usage analysis extracts all functions that are reachable from the lock 
-initialization functions in a call graph with the union-find set, and assumes 
-that these functions can not execute concurrently. However, some functions can 
-be called at multiple program sites, and some of the program sites may be not 
-reachable from the lock initialization functions, but data races that exist in 
-these functions are all dropped by our lock-usage analysis.
+caused by code that can not execute concurrently. Specifically, the lock-usage 
+analysis extracts all functions that are reachable from the lock initialization 
+functions in a call graph with the union-find set, and assumes that these 
+functions can not execute concurrently. However, some functions can be called 
+at multiple program sites, and some of the program sites may be not reachable 
+from the lock initialization functions, but data races that exist in these 
+functions are all dropped by our lock-usage analysis.
 
 \subsection{Case Studies of the Found Harmful Data Races}
 \label{subsec_case_study}
@@ -215,10 +211,10 @@ and {\em snd\_hdac\_regmap\_sync()} can execute concurrently. In Thread 2, the
 variable {\em codec->regmap} is checked by an if statement in the function {\em 
 snd\_hdac\_regmap\_sync()}. Right after the condition of the if statement is 
 calculated to be true, the variable {\em codec->regmap} is set to be NULL by 
-the function {\em snd\_hdac\_regmap\_exit()} in Thread 2. And then the function 
-{\em regcache\_sync()} is called in Thread 1, with the argument {\em 
+the function {\em snd\_hdac\_regmap\_exit()} in Thread 1. And then the function 
+{\em regcache\_sync()} is called in Thread 2, with the argument {\em 
 codec->regmap}, after acquiring the lock {\em codec->regmap\_lock}. In the 
-called function, the variable {\em codec->regmap\_lock} is dereferenced through 
+called function, the variable {\em codec->regmap} is dereferenced through 
 {\em map->lock()}. In this execution case, the data structure field {\em 
 codec->regmap} is first assigned with NULL in Thread 1, and then dereferenced 
 in Thread 2, and thus cause a null-pointer dereference.
@@ -232,13 +228,12 @@ the value of {\em gt->gt\_quota\_quantum} is updated by the function {\em
 gfs2\_reconfigure()} in Thread 2 right before the access to it in Thread 1, the 
 values of different fields recorded in logs can be inconsistent.
 
-\PP{Unprotected write in the LPFC SCSI driver.} In 
-Figure~\ref{fig_case_bugs}(c), the value of the shared variable {\em 
-phba->fcf.fcf\_flag} is set to 0 by the function {\em 
-lpfc\_unregister\_fcf\_rescan()}, without acquiring the lock {\em 
-phba->hbalock}, and this can cause double-fetch in several program sites. For 
-example, if {\em phba->fcf.fcf\_flag} is set to 0 by Thread 2 between the two 
-accesses to it in the function {\em lpfc\_register\_fcf()} in Thread 1 (Lines 
-1873 and 1874), the values of the two accesses can be different, causing 
-unpredictable behaviors.
+\PP{Double fetch in the LPFC SCSI driver.} In Figure~\ref{fig_case_bugs}(c), 
+the value of the shared variable {\em phba->fcf.fcf\_flag} is set to 0 by the 
+function {\em lpfc\_unregister\_fcf\_rescan()} in Thread 2, without acquiring 
+the lock {\em phba->hbalock}, and this can cause double fetches in several 
+program sites. For example, if {\em phba->fcf.fcf\_flag} is set to 0 by Thread 
+2 between the two accesses to it in the function {\em lpfc\_register\_fcf()} in 
+Thread 1 (Lines 1873 and 1874), the values of the two accesses can be 
+different, causing unpredictable behaviors.
 

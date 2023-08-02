@@ -5,7 +5,7 @@
 Based on the three key techniques in Section~\ref{sec_technique}, we develop a 
 practical static approach named \sys, to detect data races in OS kernels, and 
 estimate the harmfulness of these data races. We have implemented \sys with 
-Clang~\cite{clang} and Z3~\cite{z3}. \sys automatically mines locking rules, 
+Clang~\cite{clang} and Z3~\cite{z3}. \sys can automatically mine locking rules, 
 detects data races and estimates the harmfulness of detected data races. 
 Figure~\ref{fig_architecture} shows the architecture of \sys, which has four 
 phases:
@@ -25,8 +25,9 @@ used in subsequent code analysis for inter-procedural analysis across source
 files.
 
 \PP{P2: Locking-rule Mining.} The locking-rule miner uses our alias-aware rule 
-mining method to deduce locking rules about whether a variable access should be 
-protected by a lock and which lock is required.
+mining method to automatically deduce locking rules about whether accesses to a 
+specific data structure field should be protected and which data structure 
+field the protecting lock exist in
 
 \PP{P3: Data race detection and false-positive filtering.} The data race 
 detector detects data races by checking whether a given access violates the 
