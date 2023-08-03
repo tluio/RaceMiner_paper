@@ -26,7 +26,7 @@ x86-64 architecture.
 				\\ \cline{2-3}
 				\hline
 				\multirow{2}{1.5cm}{\textbf{{\em Locking-rule mining}}} & 
-				Key fields / total variables& 
+				Variables in key fields / total variables& 
 				\\ \cline{2-3}
 				& Mined locking rules &
 				\\ \cline{2-3}
@@ -44,7 +44,7 @@ x86-64 architecture.
 				\\ \cline{2-3}
 				& Double fetch (confirmed / all) & 10 / 57
 				\\ \cline{2-3}
-				& Total harmful data races (confirmed / all) & 32 / 88
+				& Total harmful data races (confirmed / all) & 32 / 87
 				\\ \cline{2-3}
 				\hline
 				\multirow{3}{1.5cm}{\textbf{{\em Time usage}}} & 
@@ -74,9 +74,7 @@ counted by CLOC~\cite{cloc}. From the results, we have the following findings:
 \PP{Code analysis.} \sys can scale to large code bases of OS kernels, and it in 
 total analyzes xxxM lines of code in xxxK source code files within xxx hours. 
 The remaining xxxM lines of code in xxxK source files are not analyzed, as they 
-are not enabled by the {\em allyesconfig} for the x86-64 architecture. We 
-believe that \sys can also find more data races in other architectures with 
-proper configuration.
+are not enabled by the {\em allyesconfig} for the x86-64 architecture.
 
 \PP{Locking-rule mining.} An OS kernel has a large code base with numerous 
 variables. Handling all variables when mining locking rules can introduce much 
@@ -103,7 +101,7 @@ reduce false positives significantly.
 or logic bugs, and thus developers are unwilling to put effort into repairing 
 them. We exploit three patterns to detect null-pointer dereferences, data 
 inconsistencies and double fetches as introduced in 
-Section~\ref{subsec_estimation}, and find 88 data races in these patterns. We 
+Section~\ref{subsec_estimation}, and find 87 data races in these patterns. We 
 report them to developers and 32 of them have been confirmed and fixed by them. 
 We still wait for the response of other data races. Moreover, one of the 
 developers wonders if \sys can be used in their CI to detect these problems. 
@@ -113,8 +111,8 @@ races effectively, and can considerably reduce the workload of developers.
 \subsection{False Positives and Negatives}
 \label{subsec_false_pos_neg}
 \PP{False positives.} \sys reports 68 false data races, and through manually 
-checking these false data races, we find that they are introduced for three 
-main reasons:
+checking these false data races, we find that they are introduced for two main 
+reasons:
 
 First, \sys employs an alias-aware rule mining method to deduce locking rules. 
 To improve the precision of mined rules, it assumes that the accessed variable 
@@ -187,10 +185,11 @@ Finally, \sys exploits a lock-usage analysis to filter out false data races
 caused by code that can not execute concurrently. Specifically, the lock-usage 
 analysis extracts all functions that are reachable from the lock initialization 
 functions in a call graph with the union-find set, and assumes that these 
-functions can not execute concurrently. However, some functions can be called 
-at multiple program sites, and some of the program sites may be not reachable 
-from the lock initialization functions, but data races that exist in these 
-functions are all dropped by our lock-usage analysis.
+functions can not execute concurrently. However, A function can be called under 
+different calling contexts, and some of the calling contexts do not contain 
+lock initialization operations, but data races that exist in these functions 
+are all dropped by our lock-usage analysis, if any calling context contains a 
+lock initialization operation.
 
 \subsection{Case Studies of the Found Harmful Data Races}
 \label{subsec_case_study}
@@ -210,8 +209,8 @@ Figure~\ref{fig_case_bugs}(a), the functions {\em snd\_hdac\_regmap\_exit()}
 and {\em snd\_hdac\_regmap\_sync()} can execute concurrently. In Thread 2, the 
 variable {\em codec->regmap} is checked by an if statement in the function {\em 
 snd\_hdac\_regmap\_sync()}. Right after the condition of the if statement is 
-calculated to be true, the variable {\em codec->regmap} is set to be NULL by 
-the function {\em snd\_hdac\_regmap\_exit()} in Thread 1. And then the function 
+calculated to be true, the variable {\em codec->regmap} is set to NULL by the 
+function {\em snd\_hdac\_regmap\_exit()} in Thread 1. And then the function 
 {\em regcache\_sync()} is called in Thread 2, with the argument {\em 
 codec->regmap}, after acquiring the lock {\em codec->regmap\_lock}. In the 
 called function, the variable {\em codec->regmap} is dereferenced through 
@@ -232,8 +231,9 @@ values of different fields recorded in logs can be inconsistent.
 the value of the shared variable {\em phba->fcf.fcf\_flag} is set to 0 by the 
 function {\em lpfc\_unregister\_fcf\_rescan()} in Thread 2, without acquiring 
 the lock {\em phba->hbalock}, and this can cause double fetches in several 
-program sites. For example, if {\em phba->fcf.fcf\_flag} is set to 0 by Thread 
-2 between the two accesses to it in the function {\em lpfc\_register\_fcf()} in 
-Thread 1 (Lines 1873 and 1874), the values of the two accesses can be 
-different, causing unpredictable behaviors.
+program sites, even if other accesses are all protected by a lock. For example, 
+if {\em phba->fcf.fcf\_flag} is set to 0 by Thread 2 between the two accesses 
+to it in the function {\em lpfc\_register\_fcf()} in Thread 1 (Lines 1873 and 
+1874), the values of the two accesses can be different, causing unpredictable 
+behaviors.
 

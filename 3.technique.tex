@@ -14,7 +14,7 @@ follows:
 \label{subsec_rule_mining}
 The relationship between variables and locks is not well documented in OS 
 kernels, but it can be inferred from the kernel code. Specifically, a variable 
-is often protected by the lock exist in the same data structure. And thus if a 
+is often protected by the lock exists in the same data structure. And thus if a 
 variable is accessed after acquiring a lock existing in the same data structure 
 in most cases, it is likely to be protected by the lock. Whether a variable and 
 the protecting lock exist in the same data structure can be determined through 
@@ -117,8 +117,8 @@ Based on the alias graph, our alias-aware rule mining method performs an
 inter-procedural, path-based~\cite{Li:ASPLOS22}, field-sensitive and 
 alias-aware analysis to effectively mine locking rules about whether accesses 
 to a specific data structure field should be protected and which data structure 
-field the protecting lock exist in. Overall, our alias-aware rule mining method 
-has three main stages shown in Figure~\ref{fig_workflow}. In Stage 1, it 
+field the protecting lock exists in. Overall, our alias-aware rule mining 
+method has three main stages shown in Figure~\ref{fig_workflow}. In Stage 1, it 
 extracts key fields that may be protected by a lock. In Stage 2, it collects 
 all accesses to key fields as well as code paths these accesses exist in. In 
 Stage 3, it deduces locking rules by calculating the proportion of field 
@@ -205,28 +205,28 @@ a key field, the field access is returned with a NULL lock (Lines 25-30).
 
 \PP{S3: Locking-rule deduction.} After collecting all accesses to key fields, 
 the analysis deduces locking rules based on statistics. However, on the one 
-hand, distinguishing different accesses to the same data structure field by 
-different program sites is not fine-grained enough, because the access to a 
-field and the acquirement to a specific lock are often packaged in a special 
-function, and all accesses under different calling context are regarded as the 
-same access in this strategy. On the other hand, distinguishing accesses by 
-different code paths can also suffer from inaccuracy when a function contains 
-many branch statements, because accesses to the same field is regarded as 
-different in different code paths, causing numerous accesses to the same field 
-due to large quantities of code paths. Based on this consideration, the 
-analysis distinguishes accesses to the same data structure field by different 
-calling contexts. Specifically, given a key field {\em f} and a lock {\em l}, 
-the analysis first finds all access to {\em f} with lock {\em l} from the 
-collected field accesses in Stage 2, and gets the number {\em 
-locked\_access\_num} by counting different calling contexts extracted from the 
-code paths of these field accesses. Then, the analysis finds all access to {\em 
-f} (no matter whether a lock is held), and gets the number {\em 
-all\_access\_num} in the same way as {\em locked\_access\_num}. If the ratio 
-{\em locked\_access\_num} / {\em all\_access\_num} is larger than a given 
-threshold, and there is at least one write access to {\em f}, the data 
-structure field {\em f} is inferred to be protected by the lock {\em l}. After 
-deducting locking rules, the analysis detects data races by checking whether a 
-field access validates any locking rules.
+hand, distinguishing accesses to the same data structure field by different 
+program sites is not fine-grained enough, because the access to a field and the 
+acquisition of a specific lock are often packaged in a special function, and 
+all accesses under different calling context are regarded as the same access in 
+this strategy. On the other hand, distinguishing accesses by different code 
+paths can also suffer from inaccuracy when a function contains many branch 
+statements, because accesses to the same field is regarded as different in 
+different code paths, causing numerous accesses to the same field due to large 
+quantities of code paths. Based on this consideration, the analysis 
+distinguishes accesses to the same data structure field by different calling 
+contexts. Specifically, given a key field {\em f} and a lock {\em l}, the 
+analysis first finds all access to {\em f} with lock {\em l} from the collected 
+field accesses in Stage 2, and gets the number {\em locked\_access\_num} by 
+counting different calling contexts extracted from the code paths of these 
+field accesses. Then, the analysis finds all access to {\em f} (no matter 
+whether a lock is held), and gets the number {\em all\_access\_num} in the same 
+way as {\em locked\_access\_num}. If the ratio {\em locked\_access\_num} / {\em 
+all\_access\_num} is larger than a given threshold, and there is at least one 
+write access to {\em f}, the data structure field {\em f} is inferred to be 
+protected by the lock {\em l}. After deducting locking rules, the analysis 
+detects data races by checking whether a field access validates any locking 
+rules.
 
 \begin{figure}[htbp]
 	\centering
@@ -258,14 +258,14 @@ acquired lock {\em Dev.lock} into the lock set. When analyzing the read
 instruction at Line 7, the analysis finds the node of the accessed field 
 ($\mathit{n_2}$) and the node of the lock stored in the lock set 
 ($\mathit{n_4}$) has the same ancestor ($\mathit{n_1}$), and thus records a 
-field access <{\em Dev.flag}, {\em Dev.lock}>. Similar to the read instruction 
-at Line 7, the method also records a field access <{\em Dev.flag*}, {\em 
-Dev.lock}> for the write instruction at Line 8. Then through an unlock 
-operation at Line 9, the analysis removes the lock {\em Dev.lock} from the lock 
-set. As a result, the key fields {\em Dev.flag} and {\em Dev.flag*} are 
-accessed without acquiring any lock at Lines 16 and 17, and thus the analysis 
-records two field accesses <{\em Dev.flag}, {\em NULL}> and <{\em Dev.flag*}, 
-{\em NULL}>. The final field accesses are shown in 
+field access <{\em Dev.flag}, {\em Dev.lock}, read>. Similar to the read 
+instruction at Line 7, the method also records a field access <{\em Dev.flag*}, 
+{\em Dev.lock}, write> for the write instruction at Line 8. Then through an 
+unlock operation at Line 9, the analysis removes the lock {\em Dev.lock} from 
+the lock set. As a result, the key fields {\em Dev.flag} and {\em Dev.flag*} 
+are accessed without acquiring any lock at Lines 16 and 17, and thus the 
+analysis records two field accesses <{\em Dev.flag}, {\em NULL}, read> and 
+<{\em Dev.flag*}, {\em NULL}, write>. The final field accesses are shown in 
 Figure~\ref{fig_demo_rule_mining}(c).
 
 After collecting all field accesses, the analysis finds that the fields {\em 
@@ -283,11 +283,11 @@ Our analysis takes functions that have no caller function as the entries like
 existing work~\cite{Li:ASPLOS22}, and performs a path-based analysis starting 
 from these entry functions. It assumes that all codes reaching from entry 
 functions can execute concurrently, to reduce false negatives. However, this 
-assumption is too conservative and can introduce many false positives because 
-not all entry functions can execute concurrently in fact. We observe that each 
-kernel module has an initialization phase, after which many functions can be 
-called concurrently by other modules. When performing initialization, the 
-kernel module serially initializes the locks and prepares other data for 
+assumption is too conservative and can inevitably introduce false positives 
+because not all entry functions can execute concurrently in fact. We observe 
+that each kernel module has an initialization phase, after which many functions 
+can be called concurrently by other modules. When performing initialization, 
+the kernel module serially initializes the locks and prepares other data for 
 subsequent operations. And thus functions with the lock initialization and 
 functions called by them tend not to execute concurrently. Based on this 
 observation, we propose a lock-usage analysis to filter out false positives 
@@ -320,7 +320,7 @@ set with the given lock initialization function (Lines 9-11).
 
 \noindent{\textbf{\em Example.}} Figure~\ref{fig_demo_lock_usage} shows a false 
 data race filtered out by our lock-usage analysis in the Linux DRM scheduler. 
-For example in {\em drm\_sched\_entity\_set\_priority()}, the accesses to {\em 
+For example in {\em drm\_sched\_entity\_set\_priority()}, the access to {\em 
 entity->priority} is protected by the lock {\em entity->rq\_lock} in most 
 cases. Therefore, {\em entity-priority} is deduced to be protected by the lock 
 {\em entity->rq\_lock}. But in {\em drm\_sched\_entity\_init()}, {\em 

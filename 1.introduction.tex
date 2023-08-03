@@ -96,14 +96,14 @@ race can bring. We observe that harmful data races can be estimated by specific
 patterns. For example, if a raced data performs as an operand of a dereference 
 instruction, a null-pointer dereference can occur; if a raced data structure is 
 accessed for more than once and each access gets its different fields, a data 
-inconsistency can occur; if a data race is caused by an unprotected write, and 
-it is likely to introduce double fetches.Based on this observation, \sys 
-exploits some patterns to extract harmful data races that can cause memory or 
-logic bugs automatically.
+inconsistency can occur; if a data race is caused by an unprotected write, it 
+is likely to introduce double fetches.Based on this observation, \sys exploits 
+some patterns to extract harmful data races that can cause memory or logic bugs 
+automatically.
 
-We have implemented \sys with LLVM~\cite{clang} and Z3~\cite{z3}. 
-\sys performs automated static analysis on the LLVM bytecode of the 
-checked OS kernel. Overall, we make three main contributions in this paper:
+We have implemented \sys with LLVM~\cite{clang}. \sys performs automated static 
+analysis on the LLVM bytecode of the checked OS kernel. Overall, we make three 
+main contributions in this paper:
 
 \begin{itemize}
 	\item We analyze the challenges to detect races in kernels, and propose 
@@ -117,8 +117,8 @@ checked OS kernel. Overall, we make three main contributions in this paper:
 	analysis approach named \sys, to effectively detect data races and 	
 	estimate the harmfulness of these data races in OS kernels.
 	\item We have evaluated \sys on Linux 6.2, and find 273 real data races, 	
-	with a false positive rate of 19.9\%. Among these data races, 88 are 
-	estimated to be harmful. We have reported these harmful bugs to Linux 
+	with a false positive rate of 19.9\%. Among these data races, 87 are 
+	estimated to be harmful. We have reported these harmful data races to Linux 
 	kernel developers, and 32 of them have been confirmed.
 \end{itemize}
 
