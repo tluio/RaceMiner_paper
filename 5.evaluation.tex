@@ -20,15 +20,18 @@ x86-64 architecture.
 				\multicolumn{2}{c|}{\textbf{Description}} & \textbf{\sys}  
 				\\ \hline
 				\multirow{2}{1.5cm}{\textbf{{\em Code analysis}}} & 
-				Source files (analyzed/all) & xxxK/xxxK
+				Source files (analyzed/all) & 22,537 / 32,328
 				\\ \cline{2-3}
-				& Source code lines (analyzed/all) & xxxM/xxxM 
+				& Source code lines (analyzed/all) & 13,686K / 16,646K 
 				\\ \cline{2-3}
 				\hline
-				\multirow{2}{1.5cm}{\textbf{{\em Locking-rule mining}}} & 
-				Variables in key fields / total variables& 
+				\multirow{3}{1.5cm}{\textbf{{\em Locking-rule mining}}} & 
+				Extracted key fields & 23,074
 				\\ \cline{2-3}
-				& Mined locking rules &
+				& Handled variables (variables in key fields / total 
+				variables)  & 23.2M / 281.0M
+				\\ \cline{2-3}
+				& Mined locking rules & 2,757
 				\\ \cline{2-3}
 				\hline
 				\multirow{2}{1.5cm}{\textbf{{\em Data race detection}}} & 
@@ -47,12 +50,14 @@ x86-64 architecture.
 				& Total harmful data races (confirmed / all) & 32 / 87
 				\\ \cline{2-3}
 				\hline
-				\multirow{3}{1.5cm}{\textbf{{\em Time usage}}} & 
+				\multirow{4}{1.5cm}{\textbf{{\em Time usage}}} & 
 				Key-field extraction & 
+				\\ \cline{2-3} 
+				& Field-access collection & 
 				\\ \cline{2-3}
-				& Data-race detection &
+				& Data-race detection and estimation &
 				\\ \cline{2-3}
-				& Total time &
+				& Total time & 772m
 				\\ \cline{2-3}
 				\hline
 			\end{tabular}
@@ -71,10 +76,10 @@ source code. We manually check all the data races found by \sys, and
 Table~\ref{tbl_bug_detection} shows the results, and source code lines are 
 counted by CLOC~\cite{cloc}. From the results, we have the following findings:
 
-\PP{Code analysis.} \sys can scale to large code bases of OS kernels, and it in 
-total analyzes xxxM lines of code in xxxK source code files within xxx hours. 
-The remaining xxxM lines of code in xxxK source files are not analyzed, as they 
-are not enabled by the {\em allyesconfig} for the x86-64 architecture.
+\PP{Code analysis.} \sys can scale to large code bases of OS kernels, and it 
+totally analyzes 13.7M lines of code in 22.5K source files within 12.9 hours. 
+The remaining 3.0M lines of code in 9.8K source files are not analyzed, as they 
+are not enabled by {\em allyesconfig} for the x86-64 architecture.
 
 \PP{Locking-rule mining.} An OS kernel has a large code base with numerous 
 variables. Handling all variables when mining locking rules can introduce much 
@@ -82,14 +87,15 @@ overhead. However, we observe that the variable that is accessed and the lock
 to protect the access often exist in the same data structure. Based on this 
 observation, our locking-rule mining method extracts key fields by finding 
 whether there exists any access to it that is protected by a lock stored in the 
-same data structure. This method drops xxx\% variables (xxx out xxx) that need 
-to be handled when mining locking rules, and thus can reduce overhead 
-significantly. After extracting key fields, our locking-rule mining method 
-collects all accesses to these key fields, and then deduces locking rules based 
-on statistics. In this paper, given a data structure field, we set the 
-threshold of the ratio of accesses protected by a specific lock to all accesses 
-to 0.6. Our alias-aware rule mining method can drop many false rules and thus 
-only mines xxx locking rules, which can effectively reduce false data races.
+same data structure. This method extracts 23.1K key fields and drops 91.7\% 
+variables (23.2M out 281.0M) that need to be handled when mining locking rules, 
+and thus can reduce overhead significantly. After extracting key fields, our 
+locking-rule mining method collects all accesses to these key fields, and then 
+deduces locking rules based on statistics. In this paper, given a data 
+structure field, we set the threshold of the ratio of accesses protected by a 
+specific lock to all accesses to 0.6. Our alias-aware rule mining method can 
+drop many false rules and thus only mines 2,757 locking rules, which can 
+effectively reduce false data races.
 
 \PP{Data race detection.} \sys reports 341 data races in the kernel source 
 code. We spent 15 hours on checking these data races and identify that 273 of 
